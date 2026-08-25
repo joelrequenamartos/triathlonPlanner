@@ -52,12 +52,30 @@
         }
 
         .header {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 6px;
             margin-bottom: 10px;
             padding-top: 2px;
+        }
+
+        .header-logout-btn {
+            position: absolute;
+            top: 2px;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background-color: var(--surface);
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .header-logo-badge {
@@ -1042,6 +1060,7 @@
     <div id="appRoot" style="display:none;">
     <div class="container">
         <div class="header">
+            <button class="header-logout-btn" onclick="logout()" title="Cerrar sesión" aria-label="Cerrar sesión">⏻</button>
             <div class="header-logo-badge">
                 <img class="header-logo" src="assets/ironman-logo.png" alt="Ironman">
             </div>
