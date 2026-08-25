@@ -63,10 +63,10 @@
             padding-top: 2px;
         }
 
-        .header-logout-btn {
+        .header-logout-btn,
+        .header-info-btn {
             position: absolute;
             top: 2px;
-            right: 0;
             width: 30px;
             height: 30px;
             border-radius: 50%;
@@ -78,6 +78,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .header-logout-btn {
+            right: 0;
+        }
+
+        .header-info-btn {
+            left: 0;
+            font-family: var(--font-display);
+            font-weight: 700;
         }
 
         .header-logo-badge {
@@ -834,7 +844,7 @@
             line-height: 1.5;
             color: var(--text);
             margin-bottom: 18px;
-            text-align: center;
+            text-align: left;
         }
 
         .confirm-actions {
@@ -1241,6 +1251,7 @@
     <div id="appRoot" style="display:none;">
     <div class="container">
         <div class="header">
+            <button class="header-info-btn" onclick="showInfoDialog()" title="Info" aria-label="Info">i</button>
             <button class="header-logout-btn" onclick="logout()" title="Cerrar sesión" aria-label="Cerrar sesión">⏻</button>
             <div class="header-logo-badge">
                 <img class="header-logo" src="assets/ironman-logo.png" alt="Ironman">
@@ -1371,13 +1382,13 @@
 
     <nav class="bottom-nav">
         <div class="nav-side">
-            <button class="nav-btn" id="navWeek" onclick="showScreen('week')">
-                <span class="nav-icon">🗓️</span>
-                <span>Semana</span>
-            </button>
             <button class="nav-btn" id="navProgress" onclick="showScreen('progress')">
                 <span class="nav-icon">📈</span>
                 <span>Progreso</span>
+            </button>
+            <button class="nav-btn" id="navWeek" onclick="showScreen('week')">
+                <span class="nav-icon">🗓️</span>
+                <span>Semana</span>
             </button>
         </div>
 
@@ -1614,7 +1625,12 @@
         let confirmCallback = null;
 
         function showConfirmDialog(message, onConfirm, options = {}) {
-            document.getElementById('confirmMessage').textContent = message;
+            const messageEl = document.getElementById('confirmMessage');
+            if (options.html) {
+                messageEl.innerHTML = message;
+            } else {
+                messageEl.textContent = message;
+            }
 
             const okBtn = document.getElementById('confirmOkBtn');
             const cancelBtn = document.getElementById('confirmCancelBtn');
@@ -1624,6 +1640,19 @@
             confirmCallback = onConfirm || null;
             document.getElementById('confirmBackdrop').classList.add('active');
             document.getElementById('confirmDialog').classList.add('active');
+        }
+
+        function showInfoDialog() {
+            showConfirmDialog(
+                `La preparación se hace desde <strong>Semana</strong>: ahí añades y organizas tus entrenamientos.<br><br>` +
+                `<strong>Hoy</strong> — lo que toca entrenar hoy.<br>` +
+                `<strong>Progreso</strong> — objetivo 2027, volumen semanal y racha.<br>` +
+                `<strong>Semana</strong> — planifica y edita cualquier semana.<br>` +
+                `<strong>Estadísticas</strong> — estructura y notas de una semana concreta.<br>` +
+                `<strong>Mi cuenta</strong> — cerrar sesión y borrar datos antiguos.`,
+                null,
+                { confirmText: 'Entendido', hideCancel: true, html: true }
+            );
         }
 
         function closeConfirmDialog() {
