@@ -1003,23 +1003,6 @@
             cursor: default;
         }
 
-        .auth-toggle {
-            margin-top: 18px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .auth-toggle-btn {
-            background: none;
-            border: none;
-            color: var(--steel);
-            font-family: var(--font-body);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 0 0 0 4px;
-        }
-
         .logout-btn {
             width: 100%;
             background: none;
@@ -1042,7 +1025,7 @@
             <div class="auth-logo-badge">
                 <img src="assets/ironman-logo.png" alt="Ironman">
             </div>
-            <h2 class="auth-title" id="authTitle">Inicia sesión</h2>
+            <h2 class="auth-title">Inicia sesión</h2>
             <p class="auth-subtitle">Tu plan de entrenamiento, en cualquier dispositivo</p>
             <form class="auth-form" id="authForm" onsubmit="submitAuthForm(event)">
                 <input type="email" id="authEmail" class="auth-input" placeholder="Email" required autocomplete="email">
@@ -1050,10 +1033,6 @@
                 <div class="auth-error" id="authError" style="display:none;"></div>
                 <button type="submit" class="auth-submit-btn" id="authSubmitBtn">Entrar</button>
             </form>
-            <div class="auth-toggle">
-                <span id="authToggleText">¿No tienes cuenta?</span>
-                <button type="button" class="auth-toggle-btn" id="authToggleBtn" onclick="toggleAuthMode()">Crear una</button>
-            </div>
         </div>
     </div>
 
@@ -1824,7 +1803,6 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
-        let authMode = 'login';
         const syncTimers = {};
 
         // Agrupa varios cambios seguidos (p. ej. escribir en una nota) en un solo guardado.
@@ -1893,19 +1871,6 @@
             el.style.display = message ? 'block' : 'none';
         }
 
-        function setAuthMode(mode) {
-            authMode = mode;
-            document.getElementById('authTitle').textContent = mode === 'login' ? 'Inicia sesión' : 'Crea tu cuenta';
-            document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'Entrar' : 'Crear cuenta';
-            document.getElementById('authToggleText').textContent = mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?';
-            document.getElementById('authToggleBtn').textContent = mode === 'login' ? 'Crear una' : 'Iniciar sesión';
-            setAuthError('');
-        }
-
-        function toggleAuthMode() {
-            setAuthMode(authMode === 'login' ? 'signup' : 'login');
-        }
-
         async function submitAuthForm(event) {
             event.preventDefault();
 
@@ -1916,19 +1881,12 @@
             setAuthError('');
             btn.disabled = true;
 
-            const { data, error } = authMode === 'login'
-                ? await supabaseClient.auth.signInWithPassword({ email, password })
-                : await supabaseClient.auth.signUp({ email, password });
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             btn.disabled = false;
 
             if (error) {
                 setAuthError(error.message);
-                return;
-            }
-
-            if (authMode === 'signup' && !data.session) {
-                setAuthError('Cuenta creada. Revisa tu email para confirmarla antes de iniciar sesión.');
                 return;
             }
             // A partir de aquí, onAuthStateChange se encarga de mostrar la app.
@@ -1954,7 +1912,7 @@
             scheduleStore = {};
             notesStore = {};
             document.getElementById('authForm').reset();
-            setAuthMode('login');
+            setAuthError('');
             showAuthGate();
         }
 
