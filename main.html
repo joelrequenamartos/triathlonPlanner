@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Semana de Entrenamientos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0a0e17;
+            --surface: #131b2e;
+            --surface-raised: #1b2740;
+            --line: #2a3856;
+            --navy: #16243e;
+            --steel: #6786b8;
+            --red: #d82530;
+            --red-dim: #a41d26;
+            --text: #eef2f8;
+            --text-muted: #8b98b3;
+            --font-display: 'Rajdhani', 'Inter', sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: var(--ink);
+            background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(103, 134, 184, 0.16), transparent);
+            color: var(--text);
+            font-family: var(--font-body);
+            padding: 8px;
+            padding-bottom: 68px;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            padding-top: 2px;
+        }
+
+        .header-logo-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f4f6fa;
+            padding: 7px 14px;
+            border-radius: 8px;
+            box-shadow: 0 4px 14px rgba(216, 37, 48, 0.35);
+        }
+
+        .header-logo {
+            height: 26px;
+            width: auto;
+            display: block;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            text-align: center;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--steel);
+            margin-top: 3px;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sheet-backdrop {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(4, 7, 14, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 200;
+        }
+
+        .sheet-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .activity-sheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--surface-raised);
+            border-top: 1px solid var(--line);
+            border-radius: 16px 16px 0 0;
+            padding: 10px 16px max(16px, env(safe-area-inset-bottom));
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+            z-index: 201;
+        }
+
+        .activity-sheet.active {
+            transform: translateY(0);
+        }
+
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background-color: var(--line);
+            margin: 0 auto 12px;
+        }
+
+        .sheet-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--steel);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 12px;
+        }
+
+        .sheet-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding-bottom: 4px;
+        }
+
+        .sheet-activity-btn {
+            padding: 12px 6px 10px;
+            border: 1px solid var(--line);
+            border-top: 3px solid var(--accent, var(--line));
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background-color: var(--surface);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sheet-activity-btn .sheet-emoji {
+            font-size: 20px;
+        }
+
+        .sheet-activity-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .period-add-btn {
+            background: none;
+            border: 1px solid var(--line);
+            color: var(--red);
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 3px 8px;
+            cursor: pointer;
+        }
+
+        .week-picker {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .week-picker-btn {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background-color: var(--surface);
+            color: var(--steel);
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .week-picker-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .week-picker-label {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        .day-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .day-nav-btn {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            color: var(--text);
+            font-size: 17px;
+            font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 12px rgba(216, 37, 48, 0.4);
+        }
+
+        .day-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .day-nav-btn:disabled {
+            background: var(--surface-raised);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .day-nav-current {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .week-carousel {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .week-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .week-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--line);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .week-dot.active {
+            background-color: var(--red);
+            width: 18px;
+            border-radius: 4px;
+        }
+
+        .week-overview-label {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+        .week-overview {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .week-overview-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 2px;
+            border-radius: 8px;
+            background-color: var(--surface);
+            border: 1px solid var(--line);
+            cursor: pointer;
+            min-width: 0;
+        }
+
+        .week-overview-day.active {
+            border-color: var(--red);
+            background-color: rgba(216, 37, 48, 0.1);
+        }
+
+        .week-overview-daylabel {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .week-overview-day.active .week-overview-daylabel {
+            color: var(--red);
+        }
+
+        .week-overview-period {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            width: 100%;
+            padding-top: 5px;
+        }
+
+        .week-overview-period + .week-overview-period {
+            border-top: 1px solid var(--line);
+        }
+
+        .week-overview-emoji {
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .week-overview-empty {
+            color: var(--line);
+            font-size: 12px;
+        }
+
+        .day-column {
+            display: none;
+            background-color: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            flex-direction: column;
+            height: 42vh;
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .day-column.active {
+            display: flex;
+            border-color: var(--steel);
+        }
+
+        .day-period {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            border-bottom: 1px solid var(--line);
+            min-width: 0;
+        }
+
+        .day-period:last-child {
+            border-bottom: none;
+        }
+
+        .period-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 6px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background-color: var(--ink);
+        }
+
+        .activities-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px;
+            flex: 1;
+            min-height: 0;
+            min-width: 0;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 8px 10px;
+            background-color: var(--surface-raised);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent, var(--line));
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .activity-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .activity-emoji {
+            font-size: 14px;
+        }
+
+        .activity-name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 11px;
+            opacity: 0.6;
+            padding: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn-remove:hover {
+            opacity: 1;
+        }
+
+        .activity-note {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 8px 8px;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text);
+            cursor: text;
+            resize: none;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .activity-note::placeholder {
+            color: var(--text-muted);
+        }
+
+        .activity-note:focus {
+            outline: 2px solid var(--steel);
+            outline-offset: 1px;
+        }
+
+        /* Colores por disciplina/actividad (variable --accent usada en tarjetas) */
+        .bg-run { --accent: #d82530; }
+        .bg-bike { --accent: #6786b8; }
+        .bg-swim { --accent: #38bdf8; }
+        .bg-leg { --accent: #f59e0b; }
+        .bg-chest { --accent: #a78bfa; }
+        .bg-isometric { --accent: #2dd4bf; }
+        .bg-plyometric { --accent: #fb923c; }
+        .bg-mobility { --accent: #4ade80; }
+        .bg-tape { --accent: #f472b6; }
+
+        .stats-container {
+            margin-top: 12px;
+            background-color: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .stats-label {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .stat-item-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-emoji {
+            font-size: 18px;
+        }
+
+        .stat-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .stat-count {
+            font-family: var(--font-mono);
+            color: var(--red);
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .stat-bar-track {
+            height: 6px;
+            border-radius: 3px;
+            background-color: var(--surface);
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--red), var(--steel));
+            transition: width 0.3s ease;
+        }
+
+        .stats-empty {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .danger-btn {
+            width: 100%;
+            background: none;
+            border: 1px solid var(--red-dim);
+            color: var(--red);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .danger-btn:active {
+            background-color: rgba(216, 37, 48, 0.1);
+        }
+
+        .confirm-dialog {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.95);
+            background-color: var(--surface-raised);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 20px 18px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s, transform 0.15s;
+            z-index: 201;
+        }
+
+        .confirm-dialog.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .confirm-cancel {
+            background: none;
+            border: 1px solid var(--line);
+            color: var(--text-muted);
+        }
+
+        .confirm-ok {
+            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            border: none;
+            color: var(--text);
+        }
+
+        .notes-log {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notes-log-day {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--steel);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-top: 6px;
+        }
+
+        .notes-log-day:first-child {
+            margin-top: 0;
+        }
+
+        .notes-log-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .notes-log-item .stat-emoji {
+            font-size: 15px;
+        }
+
+        .notes-log-text {
+            flex: 1;
+            color: #cbd5e1;
+        }
+
+        .notes-log-activity {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: var(--surface-raised);
+            border-top: 1px solid var(--line);
+            padding: 5px 0 max(5px, env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 6px 0;
+            cursor: pointer;
+        }
+
+        .nav-btn .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-btn.active {
+            color: var(--red);
+        }
+
+        /* PANTALLA HOY */
+        .today-header {
+            margin-bottom: 16px;
+        }
+
+        .today-daylabel {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--steel);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .today-datelabel {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .today-period {
+            background-color: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .today-period-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 10px;
+        }
+
+        .today-activities {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .today-activity-item {
+            padding: 10px 12px;
+            background-color: var(--surface-raised);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent, var(--line));
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .today-activity-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .today-activity-note {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text);
+            resize: none;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .today-activity-note::placeholder {
+            color: var(--text-muted);
+        }
+
+        .today-activity-note:focus {
+            outline: 2px solid var(--steel);
+            outline-offset: 1px;
+        }
+
+        .today-empty {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-logo-badge">
+                <img class="header-logo" src="assets/ironman-logo.png" alt="Ironman">
+            </div>
+            <div class="header-text">
+                <h1>Plan Personal Triatlón</h1>
+                <p class="header-subtitle">OBJETIVO: TRIATLÓN OLÍMPICO 2027</p>
+            </div>
+        </div>
+
+        <!-- PANTALLA HOY -->
+        <div class="screen active" id="screen-today">
+            <div class="today-header">
+                <div class="today-daylabel" id="todayDayLabel"></div>
+                <div class="today-datelabel" id="todayDateLabel"></div>
+            </div>
+
+            <div class="today-period">
+                <div class="today-period-title">Mañana</div>
+                <div class="today-activities" id="todayMorning"></div>
+            </div>
+
+            <div class="today-period">
+                <div class="today-period-title">Tarde</div>
+                <div class="today-activities" id="todayAfternoon"></div>
+            </div>
+        </div>
+
+        <!-- PANTALLA SEMANA -->
+        <div class="screen" id="screen-week">
+            <div class="main-wrapper">
+                <div class="main-content">
+                    <div class="week-picker">
+                        <button class="week-picker-btn" id="weekEditPrevBtn" onclick="setEditingWeek(editingWeekOffset - 1)">‹</button>
+                        <div class="week-picker-label" id="weekEditLabel"></div>
+                        <button class="week-picker-btn" id="weekEditNextBtn" onclick="setEditingWeek(editingWeekOffset + 1)">›</button>
+                    </div>
+
+                    <div class="day-nav">
+                        <button class="day-nav-btn" id="dayPrevBtn" onclick="setActiveDay(activeDayIndex - 1)">‹</button>
+                        <div class="day-nav-current" id="dayNavCurrent"></div>
+                        <button class="day-nav-btn" id="dayNextBtn" onclick="setActiveDay(activeDayIndex + 1)">›</button>
+                    </div>
+                    <div class="week-carousel" id="weekGrid"></div>
+                    <div class="week-dots" id="weekDots"></div>
+
+                    <div class="week-overview-label">Vista general de la semana</div>
+                    <div class="week-overview" id="weekOverview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA PROGRESO -->
+        <div class="screen" id="screen-stats">
+            <div class="day-nav">
+                <button class="day-nav-btn" id="statsPrevBtn" onclick="setStatsWeekOffset(statsWeekOffset - 1)">‹</button>
+                <div class="day-nav-current" id="statsWeekLabel"></div>
+                <button class="day-nav-btn" id="statsNextBtn" onclick="setStatsWeekOffset(statsWeekOffset + 1)">›</button>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Estructura semanal</div>
+                <div class="stats-grid" id="statsGrid"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label" id="notesLogLabel">Notas registradas esa semana</div>
+                <div class="notes-log" id="notesLog"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Zona de datos</div>
+                <button class="danger-btn" onclick="clearPastWeeks()">🗑️ Borrar semanas anteriores</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOJA PARA AÑADIR ACTIVIDAD -->
+    <div class="sheet-backdrop" id="sheetBackdrop" onclick="closeActivitySheet()"></div>
+    <div class="activity-sheet" id="activitySheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title" id="sheetTitle">Añadir actividad</div>
+        <div class="sheet-grid" id="sheetGrid"></div>
+    </div>
+
+    <!-- DIÁLOGO DE CONFIRMACIÓN -->
+    <div class="sheet-backdrop" id="confirmBackdrop" onclick="closeConfirmDialog()"></div>
+    <div class="confirm-dialog" id="confirmDialog">
+        <div class="confirm-message" id="confirmMessage"></div>
+        <div class="confirm-actions">
+            <button class="confirm-btn confirm-cancel" id="confirmCancelBtn" onclick="closeConfirmDialog()">Cancelar</button>
+            <button class="confirm-btn confirm-ok" id="confirmOkBtn">Confirmar</button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active" id="navToday" onclick="showScreen('today')">
+            <span class="nav-icon">📅</span>
+            <span>Hoy</span>
+        </button>
+        <button class="nav-btn" id="navWeek" onclick="showScreen('week')">
+            <span class="nav-icon">🗓️</span>
+            <span>Semana</span>
+        </button>
+        <button class="nav-btn" id="navStats" onclick="showScreen('stats')">
+            <span class="nav-icon">📊</span>
+            <span>Progreso</span>
+        </button>
+    </nav>
+
+    <script>
+        const ACTIVITIES = {
+            run: { label: 'Carrera', emoji: '🏃', color: 'bg-run' },
+            bike: { label: 'Bicicleta', emoji: '🚴', color: 'bg-bike' },
+            swim: { label: 'Natación', emoji: '🏊', color: 'bg-swim' },
+            leg: { label: 'Pierna', emoji: '🏋️', color: 'bg-leg' },
+            chest: { label: 'Torso', emoji: '💪', color: 'bg-chest' },
+            tape: { label: 'Cintilla', emoji: '🩹', color: 'bg-tape' },
+            core: { label: 'Isométricos', emoji: '🦵', color: 'bg-isometric' },
+            plyometric: { label: 'Pliométricos', emoji: '⚡', color: 'bg-plyometric' },
+            mobility: { label: 'Movilidad', emoji: '🧘', color: 'bg-mobility' }
+        };
+
+        const ACTIVITIES_WITH_NOTES = ['run', 'bike', 'swim'];
+
+        const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab', 'Dom'];
+        const DAYS_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+        const PRIORITIES = {
+            training: [
+                { id: 1, text: 'Cintilla' },
+                { id: 2, text: 'Isométricos' },
+                { id: 3, text: 'Pierna' },
+                { id: 4, text: 'Bici + Natación + Carrera' },
+                { id: 5, text: 'Torso' }
+            ]
+        };
+
+        let notesStore = getNotesStoreFromStorage();
+        const CURRENT_WEEK_KEY = getISOWeekKey(new Date());
+        let scheduleStore = getScheduleStoreFromStorage();
+        let editingWeekOffset = 0;
+        let schedule = peekSchedule(getWeekKeyWithOffset(editingWeekOffset));
+        let draggedItem = null;
+        let activeDayIndex = getTodayIndex();
+        let sheetTarget = null;
+        let statsWeekOffset = 0;
+
+        function getScheduleStoreFromStorage() {
+            let store = {};
+            try {
+                store = JSON.parse(localStorage.getItem('weeklyScheduleStore')) || {};
+            } catch {
+                store = {};
+            }
+
+            // Migra el antiguo horario único (plantilla fija) a la semana actual real, una sola vez.
+            const legacy = localStorage.getItem('weeklyScheduleMorningAfternoon');
+            if (legacy && Object.keys(store).length === 0) {
+                try {
+                    const parsed = migrateLegacySchedule(JSON.parse(legacy));
+                    store[getISOWeekKey(new Date())] = parsed;
+                } catch {
+                    // ignora datos antiguos corruptos
+                }
+                localStorage.removeItem('weeklyScheduleMorningAfternoon');
+                localStorage.setItem('weeklyScheduleStore', JSON.stringify(store));
+            }
+
+            return store;
+        }
+
+        // Convierte entradas antiguas (strings o { type, note }) al formato actual { type }
+        // y traslada cualquier nota antigua a las notas de la semana en curso.
+        function migrateLegacySchedule(raw) {
+            ['morning', 'afternoon'].forEach(period => {
+                Object.keys(raw[period] || {}).forEach(dayIndex => {
+                    raw[period][dayIndex] = raw[period][dayIndex].map(entry => {
+                        if (typeof entry === 'string') return { type: entry };
+                        if (entry.note) {
+                            setNoteRaw(getISOWeekKey(new Date()), period, dayIndex, entry.type, entry.note);
+                        }
+                        return { type: entry.type };
+                    });
+                });
+            });
+            saveNotesStore();
+            return raw;
+        }
+
+        function cloneSchedule(sched) {
+            return JSON.parse(JSON.stringify(sched));
+        }
+
+        function emptySchedule() {
+            return {
+                morning: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
+                afternoon: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
+            };
+        }
+
+        // El horario "de partida" para una semana sin datos: la semana actual (y futuras)
+        // arrancan de la plantilla base; las semanas pasadas sin datos se muestran vacías
+        // (evita que borrar una semana pasada "reaparezca" al volver a mirarla).
+        function blankScheduleFor(weekKey) {
+            return weekKey < CURRENT_WEEK_KEY ? emptySchedule() : cloneSchedule(getDefaultSchedule());
+        }
+
+        // Solo LEE una semana, sin persistir nada — para pantallas de solo visualización
+        // (Progreso) o antes de que el usuario haya editado nada.
+        function peekSchedule(weekKey) {
+            return scheduleStore[weekKey] || blankScheduleFor(weekKey);
+        }
+
+        // Cada semana real (ISO) tiene su propio horario independiente. Se materializa
+        // (y se guarda) solo en el momento en que el usuario edita esa semana.
+        function ensureScheduleWritable(weekKey) {
+            if (!scheduleStore[weekKey]) {
+                scheduleStore[weekKey] = blankScheduleFor(weekKey);
+                saveScheduleStore();
+            }
+            return scheduleStore[weekKey];
+        }
+
+        function saveScheduleStore() {
+            localStorage.setItem('weeklyScheduleStore', JSON.stringify(scheduleStore));
+        }
+
+        function makeEntry(type) {
+            return { type };
+        }
+
+        // --- Notas por semana natural (se reinician solas cada semana ISO nueva) ---
+
+        function getISOWeekKey(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = (d.getUTCDay() + 6) % 7;
+            d.setUTCDate(d.getUTCDate() - dayNum + 3);
+            const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+            const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+            firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+            const weekNum = 1 + Math.round((d - firstThursday) / (7 * 24 * 3600 * 1000));
+            return `${d.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+        }
+
+        function getWeekKeyWithOffset(offsetWeeks) {
+            const date = new Date();
+            date.setDate(date.getDate() + offsetWeeks * 7);
+            return getISOWeekKey(date);
+        }
+
+        function getWeekRangeLabel(offsetWeeks) {
+            const now = new Date();
+            const monday = new Date(now);
+            const dayNum = (now.getDay() + 6) % 7;
+            monday.setDate(now.getDate() - dayNum + offsetWeeks * 7);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            const fmt = (d) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            return `${fmt(monday)} – ${fmt(sunday)}`;
+        }
+
+        function getNotesStoreFromStorage() {
+            try {
+                return JSON.parse(localStorage.getItem('weeklyNotesStore')) || {};
+            } catch {
+                return {};
+            }
+        }
+
+        function saveNotesStore() {
+            localStorage.setItem('weeklyNotesStore', JSON.stringify(notesStore));
+        }
+
+        function setNoteRaw(weekKey, period, dayIndex, activityType, note) {
+            notesStore[weekKey] = notesStore[weekKey] || { morning: {}, afternoon: {} };
+            notesStore[weekKey][period][dayIndex] = notesStore[weekKey][period][dayIndex] || {};
+            notesStore[weekKey][period][dayIndex][activityType] = note;
+        }
+
+        function getNote(weekKey, period, dayIndex, activityType) {
+            return notesStore[weekKey]?.[period]?.[dayIndex]?.[activityType] || '';
+        }
+
+        function getDefaultSchedule() {
+            return {
+                morning: {
+                    0: [makeEntry('leg')],
+                    1: [makeEntry('swim')],
+                    2: [makeEntry('bike')],
+                    3: [makeEntry('leg')],
+                    4: [makeEntry('chest')],
+                    5: [makeEntry('swim')],
+                    6: []
+                },
+                afternoon: {
+                    0: [makeEntry('core'), makeEntry('mobility')],
+                    1: [makeEntry('mobility')],
+                    2: [makeEntry('plyometric'), makeEntry('core')],
+                    3: [makeEntry('mobility')],
+                    4: [makeEntry('core'), makeEntry('mobility')],
+                    5: [makeEntry('bike'), makeEntry('mobility')],
+                    6: [makeEntry('mobility')]
+                }
+            };
+        }
+
+        function openActivitySheet(dayIndex, period) {
+            sheetTarget = { dayIndex, period };
+            const periodLabel = period === 'morning' ? 'Mañana' : 'Tarde';
+            document.getElementById('sheetTitle').textContent = `Añadir a ${DAYS_FULL[dayIndex]} · ${periodLabel}`;
+            renderActivitySheetGrid();
+            document.getElementById('sheetBackdrop').classList.add('active');
+            document.getElementById('activitySheet').classList.add('active');
+        }
+
+        function closeActivitySheet() {
+            sheetTarget = null;
+            document.getElementById('sheetBackdrop').classList.remove('active');
+            document.getElementById('activitySheet').classList.remove('active');
+        }
+
+        function renderActivitySheetGrid() {
+            const grid = document.getElementById('sheetGrid');
+            grid.innerHTML = '';
+            if (!sheetTarget) return;
+
+            const { dayIndex, period } = sheetTarget;
+            const alreadyAdded = schedule[period][dayIndex].map(a => a.type);
+
+            Object.entries(ACTIVITIES).forEach(([key, activity]) => {
+                const btn = document.createElement('button');
+                btn.className = `sheet-activity-btn ${activity.color}`;
+                btn.disabled = alreadyAdded.includes(key);
+                btn.innerHTML = `<span class="sheet-emoji">${activity.emoji}</span><span>${activity.label}</span>`;
+                btn.onclick = () => addActivityToDayPeriod(dayIndex, period, key);
+                grid.appendChild(btn);
+            });
+        }
+
+        function addActivityToDayPeriod(dayIndex, period, activityType) {
+            const weekKey = getWeekKeyWithOffset(editingWeekOffset);
+            const sched = ensureScheduleWritable(weekKey);
+            const dayEntries = sched[period][dayIndex];
+            if (dayEntries && !dayEntries.some(a => a.type === activityType)) {
+                dayEntries.push(makeEntry(activityType));
+                saveScheduleStore();
+            }
+            schedule = sched;
+            closeActivitySheet();
+            render();
+        }
+
+        function removeActivityFromDayPeriod(weekKey, dayIndex, period, activityType) {
+            const sched = ensureScheduleWritable(weekKey);
+            sched[period][dayIndex] = sched[period][dayIndex].filter(a => a.type !== activityType);
+            saveScheduleStore();
+            setNoteRaw(weekKey, period, dayIndex, activityType, '');
+            saveNotesStore();
+            if (weekKey === getWeekKeyWithOffset(editingWeekOffset)) schedule = sched;
+            render();
+        }
+
+        function updateActivityNote(weekKey, dayIndex, period, activityType, note) {
+            setNoteRaw(weekKey, period, dayIndex, activityType, note);
+            saveNotesStore();
+        }
+
+        function handleDragStart(e, dayIndex, period, activityType) {
+            draggedItem = { dayIndex, period, activityType };
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDrop(e, targetDay, targetPeriod) {
+            e.preventDefault();
+            if (!draggedItem) return;
+
+            const { dayIndex: sourceDay, period: sourcePeriod, activityType } = draggedItem;
+
+            if (sourceDay !== targetDay || sourcePeriod !== targetPeriod) {
+                const weekKey = getWeekKeyWithOffset(editingWeekOffset);
+                const sched = ensureScheduleWritable(weekKey);
+                const entry = sched[sourcePeriod][sourceDay].find(a => a.type === activityType);
+                sched[sourcePeriod][sourceDay] = sched[sourcePeriod][sourceDay].filter(a => a.type !== activityType);
+                if (entry && !sched[targetPeriod][targetDay].some(a => a.type === activityType)) {
+                    sched[targetPeriod][targetDay].push(entry);
+                }
+                saveScheduleStore();
+                schedule = sched;
+            }
+            draggedItem = null;
+            render();
+        }
+
+        function setStatsWeekOffset(offset) {
+            statsWeekOffset = offset;
+            renderStatsScreen();
+        }
+
+        let confirmCallback = null;
+
+        function showConfirmDialog(message, onConfirm, options = {}) {
+            document.getElementById('confirmMessage').textContent = message;
+
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+            okBtn.textContent = options.confirmText || 'Confirmar';
+            cancelBtn.style.display = options.hideCancel ? 'none' : '';
+
+            confirmCallback = onConfirm || null;
+            document.getElementById('confirmBackdrop').classList.add('active');
+            document.getElementById('confirmDialog').classList.add('active');
+        }
+
+        function closeConfirmDialog() {
+            confirmCallback = null;
+            document.getElementById('confirmBackdrop').classList.remove('active');
+            document.getElementById('confirmDialog').classList.remove('active');
+        }
+
+        document.getElementById('confirmOkBtn').onclick = () => {
+            const callback = confirmCallback;
+            closeConfirmDialog();
+            if (callback) callback();
+        };
+
+        function clearPastWeeks() {
+            const pastKeys = Object.keys(scheduleStore).filter(key => key < CURRENT_WEEK_KEY);
+
+            if (pastKeys.length === 0) {
+                showConfirmDialog('No hay entrenamientos guardados de semanas anteriores.', null, {
+                    confirmText: 'Entendido',
+                    hideCancel: true
+                });
+                return;
+            }
+
+            showConfirmDialog(
+                `Esto borrará permanentemente los entrenamientos y notas de ${pastKeys.length} semana(s) anterior(es). Esta acción no se puede deshacer.`,
+                () => {
+                    pastKeys.forEach(key => delete scheduleStore[key]);
+                    Object.keys(notesStore).forEach(key => {
+                        if (key < CURRENT_WEEK_KEY) delete notesStore[key];
+                    });
+
+                    saveScheduleStore();
+                    saveNotesStore();
+
+                    if (statsWeekOffset < 0) statsWeekOffset = 0;
+                    renderStatsScreen();
+                },
+                { confirmText: 'Borrar' }
+            );
+        }
+
+        function renderStatsScreen() {
+            const label = document.getElementById('statsWeekLabel');
+            label.textContent = statsWeekOffset === 0 ? `Esta semana (${getWeekRangeLabel(0)})` : getWeekRangeLabel(statsWeekOffset);
+
+            const nextBtn = document.getElementById('statsNextBtn');
+            if (nextBtn) nextBtn.disabled = statsWeekOffset >= 0;
+
+            renderStats();
+            renderNotesLog();
+        }
+
+        function renderStats() {
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = '';
+
+            const statsSchedule = peekSchedule(getWeekKeyWithOffset(statsWeekOffset));
+            const counts = {};
+            ['morning', 'afternoon'].forEach(period => {
+                Object.values(statsSchedule[period]).forEach(day => {
+                    day.forEach(entry => {
+                        counts[entry.type] = (counts[entry.type] || 0) + 1;
+                    });
+                });
+            });
+
+            const maxCount = Math.max(1, ...Object.values(counts));
+            const entries = Object.entries(ACTIVITIES).filter(([key]) => counts[key] > 0);
+
+            if (entries.length === 0) {
+                grid.innerHTML = '<div class="stats-empty">Aún no has planificado ningún entrenamiento.</div>';
+                return;
+            }
+
+            entries.forEach(([key, activity]) => {
+                const count = counts[key];
+                const stat = document.createElement('div');
+                stat.className = 'stat-item';
+                stat.innerHTML = `
+                    <div class="stat-item-top">
+                        <span class="stat-emoji">${activity.emoji}</span>
+                        <span class="stat-name">${activity.label}</span>
+                        <span class="stat-count">${count}×</span>
+                    </div>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" style="width: ${(count / maxCount) * 100}%"></div>
+                    </div>
+                `;
+                grid.appendChild(stat);
+            });
+        }
+
+        function renderNotesLog() {
+            const log = document.getElementById('notesLog');
+            const label = document.getElementById('notesLogLabel');
+            log.innerHTML = '';
+
+            const weekKey = getWeekKeyWithOffset(statsWeekOffset);
+            const statsSchedule = peekSchedule(weekKey);
+            label.textContent = `Notas registradas · ${statsWeekOffset === 0 ? 'esta semana' : getWeekRangeLabel(statsWeekOffset)}`;
+
+            let hasNotes = false;
+
+            DAYS_FULL.forEach((dayName, dayIndex) => {
+                const dayNotes = [];
+
+                ['morning', 'afternoon'].forEach(period => {
+                    (statsSchedule[period][dayIndex] || []).forEach(entry => {
+                        const note = getNote(weekKey, period, dayIndex, entry.type);
+                        if (note) {
+                            dayNotes.push({ period, activity: ACTIVITIES[entry.type], note });
+                        }
+                    });
+                });
+
+                if (dayNotes.length === 0) return;
+                hasNotes = true;
+
+                const dayHeading = document.createElement('div');
+                dayHeading.className = 'notes-log-day';
+                dayHeading.textContent = dayName;
+                log.appendChild(dayHeading);
+
+                dayNotes.forEach(({ period, activity, note }) => {
+                    const item = document.createElement('div');
+                    item.className = 'notes-log-item';
+                    const periodLabel = period === 'morning' ? 'Mañana' : 'Tarde';
+                    item.innerHTML = `
+                        <span class="stat-emoji">${activity.emoji}</span>
+                        <span class="notes-log-text"><span class="notes-log-activity">${activity.label} · ${periodLabel}:</span> ${note}</span>
+                    `;
+                    log.appendChild(item);
+                });
+            });
+
+            if (!hasNotes) {
+                log.innerHTML = '<div class="stats-empty">No hay notas registradas esta semana.</div>';
+            }
+        }
+
+        function buildActivityItem(weekKey, dayIndex, period, entry) {
+            const activity = ACTIVITIES[entry.type];
+            const item = document.createElement('div');
+            item.className = `activity-item ${activity.color}`;
+            item.draggable = true;
+            item.ondragstart = (e) => handleDragStart(e, dayIndex, period, entry.type);
+            item.ondragend = handleDragEnd;
+
+            const row = document.createElement('div');
+            row.className = 'activity-item-row';
+
+            const emoji = document.createElement('span');
+            emoji.className = 'activity-emoji';
+            emoji.textContent = activity.emoji;
+
+            const name = document.createElement('span');
+            name.className = 'activity-name';
+            name.textContent = activity.label;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn-remove';
+            btn.textContent = '✕';
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                removeActivityFromDayPeriod(weekKey, dayIndex, period, entry.type);
+            };
+
+            row.appendChild(emoji);
+            row.appendChild(name);
+            row.appendChild(btn);
+
+            item.appendChild(row);
+
+            if (ACTIVITIES_WITH_NOTES.includes(entry.type)) {
+                const note = document.createElement('textarea');
+                note.rows = 1;
+                note.className = 'activity-note';
+                note.placeholder = 'Añade un detalle (series, ritmo, km...)';
+                note.value = getNote(weekKey, period, dayIndex, entry.type);
+                note.onclick = (e) => e.stopPropagation();
+                note.oninput = (e) => {
+                    autoResizeTextarea(e.target);
+                    updateActivityNote(weekKey, dayIndex, period, entry.type, e.target.value);
+                };
+                item.appendChild(note);
+            }
+
+            return item;
+        }
+
+        function buildDayPeriod(dayIndex, period, label) {
+            const periodEl = document.createElement('div');
+            periodEl.className = 'day-period';
+
+            const periodLabel = document.createElement('div');
+            periodLabel.className = 'period-label';
+
+            const labelText = document.createElement('span');
+            labelText.textContent = label;
+
+            const addBtn = document.createElement('button');
+            addBtn.className = 'period-add-btn';
+            addBtn.textContent = '+ Añadir';
+            addBtn.onclick = () => openActivitySheet(dayIndex, period);
+
+            periodLabel.appendChild(labelText);
+            periodLabel.appendChild(addBtn);
+            periodEl.appendChild(periodLabel);
+
+            const container = document.createElement('div');
+            container.className = 'activities-container';
+            container.ondragover = handleDragOver;
+            container.ondrop = (e) => handleDrop(e, dayIndex, period);
+
+            const weekKey = getWeekKeyWithOffset(editingWeekOffset);
+            schedule[period][dayIndex].forEach(entry => {
+                container.appendChild(buildActivityItem(weekKey, dayIndex, period, entry));
+            });
+
+            periodEl.appendChild(container);
+            return periodEl;
+        }
+
+        function setEditingWeek(offset) {
+            editingWeekOffset = offset;
+            schedule = peekSchedule(getWeekKeyWithOffset(offset));
+            renderWeekGrid();
+        }
+
+        function renderWeekGrid() {
+            const label = document.getElementById('weekEditLabel');
+            if (label) {
+                label.textContent = editingWeekOffset === 0 ? `Esta semana (${getWeekRangeLabel(0)})` : getWeekRangeLabel(editingWeekOffset);
+            }
+            const nextBtn = document.getElementById('weekEditNextBtn');
+            if (nextBtn) nextBtn.disabled = editingWeekOffset >= 0;
+
+            const grid = document.getElementById('weekGrid');
+            const dots = document.getElementById('weekDots');
+            grid.innerHTML = '';
+            dots.innerHTML = '';
+
+            DAYS.forEach((day, dayIndex) => {
+                const dayCol = document.createElement('div');
+                dayCol.className = 'day-column';
+                dayCol.dataset.dayIndex = dayIndex;
+
+                dayCol.appendChild(buildDayPeriod(dayIndex, 'morning', 'Mañana'));
+                dayCol.appendChild(buildDayPeriod(dayIndex, 'afternoon', 'Tarde'));
+
+                grid.appendChild(dayCol);
+
+                const dot = document.createElement('button');
+                dot.className = 'week-dot';
+                dot.onclick = () => setActiveDay(dayIndex);
+                dots.appendChild(dot);
+            });
+
+            renderWeekOverview();
+            setActiveDay(activeDayIndex);
+        }
+
+        function renderWeekOverview() {
+            const overview = document.getElementById('weekOverview');
+            overview.innerHTML = '';
+
+            DAYS.forEach((day, dayIndex) => {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'week-overview-day';
+                dayCell.dataset.dayIndex = dayIndex;
+                dayCell.onclick = () => setActiveDay(dayIndex);
+
+                const label = document.createElement('div');
+                label.className = 'week-overview-daylabel';
+                label.textContent = day;
+
+                dayCell.appendChild(label);
+
+                ['morning', 'afternoon'].forEach(period => {
+                    const periodBlock = document.createElement('div');
+                    periodBlock.className = 'week-overview-period';
+
+                    const entries = schedule[period][dayIndex];
+                    if (entries.length === 0) {
+                        periodBlock.innerHTML = '<span class="week-overview-empty">–</span>';
+                    } else {
+                        entries.forEach(entry => {
+                            const emoji = document.createElement('div');
+                            emoji.className = 'week-overview-emoji';
+                            emoji.textContent = ACTIVITIES[entry.type].emoji;
+                            periodBlock.appendChild(emoji);
+                        });
+                    }
+
+                    dayCell.appendChild(periodBlock);
+                });
+
+                overview.appendChild(dayCell);
+            });
+        }
+
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+
+        function setActiveDay(index) {
+            if (index < 0 || index > 6) return;
+            activeDayIndex = index;
+
+            document.querySelectorAll('.day-column').forEach((col, i) => {
+                col.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.week-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.week-overview-day').forEach((cell, i) => {
+                cell.classList.toggle('active', i === index);
+            });
+
+            const currentLabel = document.getElementById('dayNavCurrent');
+            if (currentLabel) currentLabel.textContent = DAYS_FULL[index];
+
+            const prevBtn = document.getElementById('dayPrevBtn');
+            const nextBtn = document.getElementById('dayNextBtn');
+            if (prevBtn) prevBtn.disabled = index === 0;
+            if (nextBtn) nextBtn.disabled = index === 6;
+
+            const activeCol = document.querySelector('.day-column.active');
+            if (activeCol) {
+                activeCol.querySelectorAll('.activity-note').forEach(autoResizeTextarea);
+            }
+        }
+
+        function showScreen(name) {
+            document.getElementById('screen-today').classList.toggle('active', name === 'today');
+            document.getElementById('screen-week').classList.toggle('active', name === 'week');
+            document.getElementById('screen-stats').classList.toggle('active', name === 'stats');
+            document.getElementById('navToday').classList.toggle('active', name === 'today');
+            document.getElementById('navWeek').classList.toggle('active', name === 'week');
+            document.getElementById('navStats').classList.toggle('active', name === 'stats');
+
+            if (name === 'stats') {
+                renderStatsScreen();
+            }
+            if (name === 'today') {
+                renderToday();
+                document.querySelectorAll('.today-activity-note').forEach(autoResizeTextarea);
+            }
+            if (name === 'week') {
+                editingWeekOffset = 0;
+                schedule = peekSchedule(getWeekKeyWithOffset(editingWeekOffset));
+                renderWeekGrid();
+            }
+        }
+
+        function getTodayIndex() {
+            const jsDay = new Date().getDay(); // 0 = domingo
+            return (jsDay + 6) % 7; // 0 = lunes ... 6 = domingo
+        }
+
+        function renderTodayPeriod(containerId, dayIndex, period) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            const todaySchedule = peekSchedule(CURRENT_WEEK_KEY);
+            const activities = todaySchedule[period][dayIndex];
+
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<div class="today-empty">Sin entrenamientos</div>';
+                return;
+            }
+
+            activities.forEach(entry => {
+                const activity = ACTIVITIES[entry.type];
+                const item = document.createElement('div');
+                item.className = `today-activity-item ${activity.color}`;
+
+                const row = document.createElement('div');
+                row.className = 'today-activity-row';
+                row.innerHTML = `<span>${activity.emoji}</span><span>${activity.label}</span>`;
+
+                item.appendChild(row);
+
+                if (ACTIVITIES_WITH_NOTES.includes(entry.type)) {
+                    const note = document.createElement('textarea');
+                    note.rows = 1;
+                    note.className = 'today-activity-note';
+                    note.placeholder = 'Añade un detalle (series, ritmo, km...)';
+                    note.value = getNote(CURRENT_WEEK_KEY, period, dayIndex, entry.type);
+                    note.oninput = (e) => {
+                        autoResizeTextarea(e.target);
+                        updateActivityNote(CURRENT_WEEK_KEY, dayIndex, period, entry.type, e.target.value);
+                    };
+                    item.appendChild(note);
+                }
+
+                container.appendChild(item);
+            });
+        }
+
+        function renderToday() {
+            const dayIndex = getTodayIndex();
+            document.getElementById('todayDayLabel').textContent = DAYS_FULL[dayIndex];
+            document.getElementById('todayDateLabel').textContent = new Date().toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long'
+            });
+
+            renderTodayPeriod('todayMorning', dayIndex, 'morning');
+            renderTodayPeriod('todayAfternoon', dayIndex, 'afternoon');
+        }
+
+        function render() {
+            renderWeekGrid();
+            renderStatsScreen();
+            renderToday();
+        }
+
+        render();
+    </script>
+</body>
+</html>
