@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --ink: #0a0e17;
@@ -881,9 +882,164 @@
             color: var(--text-muted);
             font-style: italic;
         }
+
+        /* PANTALLA DE LOGIN */
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: var(--ink);
+            background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(103, 134, 184, 0.16), transparent);
+            z-index: 300;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .auth-logo-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f4f6fa;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 14px rgba(216, 37, 48, 0.35);
+        }
+
+        .auth-logo-badge img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+        }
+
+        .auth-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .auth-input {
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .auth-input:focus {
+            outline: 2px solid var(--steel);
+            outline-offset: 1px;
+        }
+
+        .auth-error {
+            font-size: 12px;
+            color: var(--red);
+            line-height: 1.4;
+        }
+
+        .auth-submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            border: none;
+            color: var(--text);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .auth-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .auth-toggle {
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--steel);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0 0 0 4px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: none;
+            border: 1px solid var(--line);
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
+    <!-- PANTALLA DE LOGIN -->
+    <div class="auth-gate" id="authGate">
+        <div class="auth-card">
+            <div class="auth-logo-badge">
+                <img src="assets/ironman-logo.png" alt="Ironman">
+            </div>
+            <h2 class="auth-title" id="authTitle">Inicia sesión</h2>
+            <p class="auth-subtitle">Tu plan de entrenamiento, en cualquier dispositivo</p>
+            <form class="auth-form" id="authForm" onsubmit="submitAuthForm(event)">
+                <input type="email" id="authEmail" class="auth-input" placeholder="Email" required autocomplete="email">
+                <input type="password" id="authPassword" class="auth-input" placeholder="Contraseña" required autocomplete="current-password" minlength="6">
+                <div class="auth-error" id="authError" style="display:none;"></div>
+                <button type="submit" class="auth-submit-btn" id="authSubmitBtn">Entrar</button>
+            </form>
+            <div class="auth-toggle">
+                <span id="authToggleText">¿No tienes cuenta?</span>
+                <button type="button" class="auth-toggle-btn" id="authToggleBtn" onclick="toggleAuthMode()">Crear una</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="appRoot" style="display:none;">
     <div class="container">
         <div class="header">
             <div class="header-logo-badge">
@@ -956,7 +1112,8 @@
             </div>
 
             <div class="stats-container">
-                <div class="stats-label">Zona de datos</div>
+                <div class="stats-label">Cuenta</div>
+                <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
                 <button class="danger-btn" onclick="clearPastWeeks()">🗑️ Borrar semanas anteriores</button>
             </div>
         </div>
@@ -994,6 +1151,7 @@
             <span>Progreso</span>
         </button>
     </nav>
+    </div>
 
     <script>
         const ACTIVITIES = {
@@ -1023,57 +1181,15 @@
             ]
         };
 
-        let notesStore = getNotesStoreFromStorage();
+        let notesStore = {};
         const CURRENT_WEEK_KEY = getISOWeekKey(new Date());
-        let scheduleStore = getScheduleStoreFromStorage();
+        let scheduleStore = {};
         let editingWeekOffset = 0;
         let schedule = peekSchedule(getWeekKeyWithOffset(editingWeekOffset));
         let draggedItem = null;
         let activeDayIndex = getTodayIndex();
         let sheetTarget = null;
         let statsWeekOffset = 0;
-
-        function getScheduleStoreFromStorage() {
-            let store = {};
-            try {
-                store = JSON.parse(localStorage.getItem('weeklyScheduleStore')) || {};
-            } catch {
-                store = {};
-            }
-
-            // Migra el antiguo horario único (plantilla fija) a la semana actual real, una sola vez.
-            const legacy = localStorage.getItem('weeklyScheduleMorningAfternoon');
-            if (legacy && Object.keys(store).length === 0) {
-                try {
-                    const parsed = migrateLegacySchedule(JSON.parse(legacy));
-                    store[getISOWeekKey(new Date())] = parsed;
-                } catch {
-                    // ignora datos antiguos corruptos
-                }
-                localStorage.removeItem('weeklyScheduleMorningAfternoon');
-                localStorage.setItem('weeklyScheduleStore', JSON.stringify(store));
-            }
-
-            return store;
-        }
-
-        // Convierte entradas antiguas (strings o { type, note }) al formato actual { type }
-        // y traslada cualquier nota antigua a las notas de la semana en curso.
-        function migrateLegacySchedule(raw) {
-            ['morning', 'afternoon'].forEach(period => {
-                Object.keys(raw[period] || {}).forEach(dayIndex => {
-                    raw[period][dayIndex] = raw[period][dayIndex].map(entry => {
-                        if (typeof entry === 'string') return { type: entry };
-                        if (entry.note) {
-                            setNoteRaw(getISOWeekKey(new Date()), period, dayIndex, entry.type, entry.note);
-                        }
-                        return { type: entry.type };
-                    });
-                });
-            });
-            saveNotesStore();
-            return raw;
-        }
 
         function emptySchedule() {
             return {
@@ -1096,17 +1212,13 @@
         }
 
         // Cada semana real (ISO) tiene su propio horario independiente. Se materializa
-        // (y se guarda) solo en el momento en que el usuario edita esa semana.
+        // en memoria solo en el momento en que el usuario edita esa semana; queueSync()
+        // se encarga de guardarlo en Supabase.
         function ensureScheduleWritable(weekKey) {
             if (!scheduleStore[weekKey]) {
                 scheduleStore[weekKey] = blankScheduleFor(weekKey);
-                saveScheduleStore();
             }
             return scheduleStore[weekKey];
-        }
-
-        function saveScheduleStore() {
-            localStorage.setItem('weeklyScheduleStore', JSON.stringify(scheduleStore));
         }
 
         function makeEntry(type) {
@@ -1141,18 +1253,6 @@
             sunday.setDate(monday.getDate() + 6);
             const fmt = (d) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
             return `${fmt(monday)} – ${fmt(sunday)}`;
-        }
-
-        function getNotesStoreFromStorage() {
-            try {
-                return JSON.parse(localStorage.getItem('weeklyNotesStore')) || {};
-            } catch {
-                return {};
-            }
-        }
-
-        function saveNotesStore() {
-            localStorage.setItem('weeklyNotesStore', JSON.stringify(notesStore));
         }
 
         function setNoteRaw(weekKey, period, dayIndex, activityType, note) {
@@ -1204,7 +1304,7 @@
             const dayEntries = sched[period][dayIndex];
             if (dayEntries && !dayEntries.some(a => a.type === activityType)) {
                 dayEntries.push(makeEntry(activityType));
-                saveScheduleStore();
+                queueSync(weekKey);
             }
             schedule = sched;
             closeActivitySheet();
@@ -1214,16 +1314,15 @@
         function removeActivityFromDayPeriod(weekKey, dayIndex, period, activityType) {
             const sched = ensureScheduleWritable(weekKey);
             sched[period][dayIndex] = sched[period][dayIndex].filter(a => a.type !== activityType);
-            saveScheduleStore();
             setNoteRaw(weekKey, period, dayIndex, activityType, '');
-            saveNotesStore();
+            queueSync(weekKey);
             if (weekKey === getWeekKeyWithOffset(editingWeekOffset)) schedule = sched;
             render();
         }
 
         function updateActivityNote(weekKey, dayIndex, period, activityType, note) {
             setNoteRaw(weekKey, period, dayIndex, activityType, note);
-            saveNotesStore();
+            queueSync(weekKey);
         }
 
         function handleDragStart(e, dayIndex, period, activityType) {
@@ -1254,7 +1353,7 @@
                 if (entry && !sched[targetPeriod][targetDay].some(a => a.type === activityType)) {
                     sched[targetPeriod][targetDay].push(entry);
                 }
-                saveScheduleStore();
+                queueSync(weekKey);
                 schedule = sched;
             }
             draggedItem = null;
@@ -1306,14 +1405,13 @@
 
             showConfirmDialog(
                 `Esto borrará permanentemente los entrenamientos y notas de ${pastKeys.length} semana(s) anterior(es). Esta acción no se puede deshacer.`,
-                () => {
+                async () => {
                     pastKeys.forEach(key => delete scheduleStore[key]);
                     Object.keys(notesStore).forEach(key => {
                         if (key < CURRENT_WEEK_KEY) delete notesStore[key];
                     });
 
-                    saveScheduleStore();
-                    saveNotesStore();
+                    await deletePastWeeksFromSupabase();
 
                     if (statsWeekOffset < 0) statsWeekOffset = 0;
                     renderStatsScreen();
@@ -1700,7 +1798,154 @@
             renderToday();
         }
 
-        render();
+        // --- Supabase: cuenta y sincronización de datos en la nube ---
+
+        const SUPABASE_URL = 'https://lspvaciqlluzemdbvtuf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_EQqUAXE14xP6OVuz_Wpu-g_jEnFRo09';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let authMode = 'login';
+        const syncTimers = {};
+
+        // Agrupa varios cambios seguidos (p. ej. escribir en una nota) en un solo guardado.
+        function queueSync(weekKey) {
+            clearTimeout(syncTimers[weekKey]);
+            syncTimers[weekKey] = setTimeout(() => syncWeekNow(weekKey), 500);
+        }
+
+        async function syncWeekNow(weekKey) {
+            if (!currentUser) return;
+            const { error } = await supabaseClient.from('weekly_data').upsert({
+                user_id: currentUser.id,
+                week_key: weekKey,
+                schedule: scheduleStore[weekKey] || emptySchedule(),
+                notes: notesStore[weekKey] || { morning: {}, afternoon: {} },
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id,week_key' });
+
+            if (error) console.error('Error guardando en Supabase:', error);
+        }
+
+        async function deletePastWeeksFromSupabase() {
+            if (!currentUser) return;
+            const { error } = await supabaseClient
+                .from('weekly_data')
+                .delete()
+                .eq('user_id', currentUser.id)
+                .lt('week_key', CURRENT_WEEK_KEY);
+
+            if (error) console.error('Error borrando semanas anteriores:', error);
+        }
+
+        async function loadAllDataFromSupabase() {
+            scheduleStore = {};
+            notesStore = {};
+
+            const { data, error } = await supabaseClient
+                .from('weekly_data')
+                .select('week_key, schedule, notes')
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error cargando datos de Supabase:', error);
+                return;
+            }
+
+            (data || []).forEach(row => {
+                scheduleStore[row.week_key] = row.schedule;
+                notesStore[row.week_key] = row.notes;
+            });
+        }
+
+        function showAuthGate() {
+            document.getElementById('authGate').style.display = 'flex';
+            document.getElementById('appRoot').style.display = 'none';
+        }
+
+        function showApp() {
+            document.getElementById('authGate').style.display = 'none';
+            document.getElementById('appRoot').style.display = 'block';
+        }
+
+        function setAuthError(message) {
+            const el = document.getElementById('authError');
+            el.textContent = message || '';
+            el.style.display = message ? 'block' : 'none';
+        }
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            document.getElementById('authTitle').textContent = mode === 'login' ? 'Inicia sesión' : 'Crea tu cuenta';
+            document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'Entrar' : 'Crear cuenta';
+            document.getElementById('authToggleText').textContent = mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?';
+            document.getElementById('authToggleBtn').textContent = mode === 'login' ? 'Crear una' : 'Iniciar sesión';
+            setAuthError('');
+        }
+
+        function toggleAuthMode() {
+            setAuthMode(authMode === 'login' ? 'signup' : 'login');
+        }
+
+        async function submitAuthForm(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const btn = document.getElementById('authSubmitBtn');
+
+            setAuthError('');
+            btn.disabled = true;
+
+            const { data, error } = authMode === 'login'
+                ? await supabaseClient.auth.signInWithPassword({ email, password })
+                : await supabaseClient.auth.signUp({ email, password });
+
+            btn.disabled = false;
+
+            if (error) {
+                setAuthError(error.message);
+                return;
+            }
+
+            if (authMode === 'signup' && !data.session) {
+                setAuthError('Cuenta creada. Revisa tu email para confirmarla antes de iniciar sesión.');
+                return;
+            }
+            // A partir de aquí, onAuthStateChange se encarga de mostrar la app.
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+        }
+
+        async function onAuthed(user) {
+            currentUser = user;
+            await loadAllDataFromSupabase();
+            editingWeekOffset = 0;
+            statsWeekOffset = 0;
+            activeDayIndex = getTodayIndex();
+            schedule = peekSchedule(getWeekKeyWithOffset(editingWeekOffset));
+            showApp();
+            render();
+        }
+
+        function onSignedOut() {
+            currentUser = null;
+            scheduleStore = {};
+            notesStore = {};
+            document.getElementById('authForm').reset();
+            setAuthMode('login');
+            showAuthGate();
+        }
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                onAuthed(session.user);
+            } else {
+                onSignedOut();
+            }
+        });
     </script>
 </body>
 </html>
