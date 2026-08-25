@@ -1075,10 +1075,6 @@
             return raw;
         }
 
-        function cloneSchedule(sched) {
-            return JSON.parse(JSON.stringify(sched));
-        }
-
         function emptySchedule() {
             return {
                 morning: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
@@ -1086,11 +1082,11 @@
             };
         }
 
-        // El horario "de partida" para una semana sin datos: la semana actual (y futuras)
-        // arrancan de la plantilla base; las semanas pasadas sin datos se muestran vacías
-        // (evita que borrar una semana pasada "reaparezca" al volver a mirarla).
+        // El horario "de partida" para una semana sin datos: siempre vacío, tanto para
+        // semanas pasadas como para la actual o futuras. Así cada usuario nuevo (o cada
+        // semana nueva) empieza en blanco en vez de con un entreno de ejemplo prellenado.
         function blankScheduleFor(weekKey) {
-            return weekKey < CURRENT_WEEK_KEY ? emptySchedule() : cloneSchedule(getDefaultSchedule());
+            return emptySchedule();
         }
 
         // Solo LEE una semana, sin persistir nada — para pantallas de solo visualización
@@ -1167,29 +1163,6 @@
 
         function getNote(weekKey, period, dayIndex, activityType) {
             return notesStore[weekKey]?.[period]?.[dayIndex]?.[activityType] || '';
-        }
-
-        function getDefaultSchedule() {
-            return {
-                morning: {
-                    0: [makeEntry('leg')],
-                    1: [makeEntry('swim')],
-                    2: [makeEntry('bike')],
-                    3: [makeEntry('leg')],
-                    4: [makeEntry('chest')],
-                    5: [makeEntry('swim')],
-                    6: []
-                },
-                afternoon: {
-                    0: [makeEntry('core'), makeEntry('mobility')],
-                    1: [makeEntry('mobility')],
-                    2: [makeEntry('plyometric'), makeEntry('core')],
-                    3: [makeEntry('mobility')],
-                    4: [makeEntry('core'), makeEntry('mobility')],
-                    5: [makeEntry('bike'), makeEntry('mobility')],
-                    6: [makeEntry('mobility')]
-                }
-            };
         }
 
         function openActivitySheet(dayIndex, period) {
