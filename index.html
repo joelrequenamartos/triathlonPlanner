@@ -638,6 +638,156 @@
             font-style: italic;
         }
 
+        /* OBJETIVO 2027 */
+        .goal-card {
+            background: linear-gradient(160deg, var(--surface-raised), var(--surface));
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .goal-number {
+            font-family: var(--font-mono);
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--red);
+            line-height: 1;
+        }
+
+        .goal-label {
+            margin-top: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .goal-approx {
+            text-transform: none;
+            font-weight: 400;
+            letter-spacing: normal;
+        }
+
+        /* VOLUMEN SEMANAL */
+        .volume-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 110px;
+            padding-top: 18px;
+        }
+
+        .volume-bar-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            position: relative;
+        }
+
+        .volume-bar-value {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+
+        .volume-bar {
+            width: 100%;
+            max-width: 16px;
+            border-radius: 3px 3px 1px 1px;
+            background-color: var(--steel);
+            min-height: 2px;
+        }
+
+        .volume-bar-col.is-current .volume-bar {
+            background-color: var(--red);
+        }
+
+        .volume-bar-col.is-current .volume-bar-value {
+            color: var(--red);
+        }
+
+        .volume-bar-label {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            white-space: nowrap;
+        }
+
+        /* CONSTANCIA / RACHA */
+        .streak-stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .streak-stat {
+            flex: 1;
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .streak-stat-value {
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .streak-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-top: 2px;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-rows: repeat(7, 1fr);
+            grid-auto-flow: column;
+            gap: 3px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .heatmap-cell {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            background-color: var(--line);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .heatmap-cell.is-today {
+            box-shadow: 0 0 0 1px var(--red);
+        }
+
+        .heatmap-cell[data-level="1"] { background-color: #33507f; }
+        .heatmap-cell[data-level="2"] { background-color: #4368a0; }
+        .heatmap-cell[data-level="3"] { background-color: #567fc0; }
+        .heatmap-cell[data-level="4"] { background-color: #6f9bdc; }
+
+        .heatmap-detail {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-family: var(--font-mono);
+        }
+
         .danger-btn {
             width: 100%;
             background: none;
@@ -1093,6 +1243,32 @@
 
         <!-- PANTALLA PROGRESO -->
         <div class="screen" id="screen-stats">
+            <div class="goal-card">
+                <div class="goal-number" id="goalDays"></div>
+                <div class="goal-label">días para el Triatlón Olímpico 2027 <span class="goal-approx">(fecha aprox.)</span></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Volumen semanal</div>
+                <div class="volume-chart" id="volumeChart"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Constancia</div>
+                <div class="streak-stats">
+                    <div class="streak-stat">
+                        <div class="streak-stat-value" id="streakCurrent"></div>
+                        <div class="streak-stat-label">Racha actual</div>
+                    </div>
+                    <div class="streak-stat">
+                        <div class="streak-stat-value" id="streakBest"></div>
+                        <div class="streak-stat-label">Mejor racha</div>
+                    </div>
+                </div>
+                <div class="heatmap-grid" id="heatmapGrid"></div>
+                <div class="heatmap-detail" id="heatmapDetail">Toca un día para ver el detalle</div>
+            </div>
+
             <div class="day-nav">
                 <button class="day-nav-btn" id="statsPrevBtn" onclick="setStatsWeekOffset(statsWeekOffset - 1)">‹</button>
                 <div class="day-nav-current" id="statsWeekLabel"></div>
@@ -1425,8 +1601,131 @@
             const nextBtn = document.getElementById('statsNextBtn');
             if (nextBtn) nextBtn.disabled = statsWeekOffset >= 0;
 
+            renderGoalCountdown();
+            renderVolumeChart();
+            renderStreakSection();
             renderStats();
             renderNotesLog();
+        }
+
+        // --- Objetivo 2027 ---
+
+        const GOAL_DATE = new Date('2027-06-30T00:00:00');
+
+        function renderGoalCountdown() {
+            const msPerDay = 24 * 60 * 60 * 1000;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const days = Math.max(0, Math.round((GOAL_DATE - today) / msPerDay));
+            document.getElementById('goalDays').textContent = days;
+        }
+
+        // --- Volumen semanal (últimas 12 semanas) ---
+
+        function countEntriesInSchedule(sched) {
+            let total = 0;
+            ['morning', 'afternoon'].forEach(period => {
+                Object.values(sched[period]).forEach(day => { total += day.length; });
+            });
+            return total;
+        }
+
+        function getWeekStartLabel(offset) {
+            const now = new Date();
+            const monday = new Date(now);
+            const dayNum = (now.getDay() + 6) % 7;
+            monday.setDate(now.getDate() - dayNum + offset * 7);
+            return monday.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        }
+
+        function renderVolumeChart() {
+            const chart = document.getElementById('volumeChart');
+            chart.innerHTML = '';
+
+            const weeks = [];
+            for (let offset = -11; offset <= 0; offset++) {
+                const weekKey = getWeekKeyWithOffset(offset);
+                weeks.push({ offset, count: countEntriesInSchedule(peekSchedule(weekKey)) });
+            }
+
+            const maxCount = Math.max(1, ...weeks.map(w => w.count));
+
+            weeks.forEach(({ offset, count }) => {
+                const col = document.createElement('div');
+                col.className = 'volume-bar-col' + (offset === 0 ? ' is-current' : '');
+
+                const value = document.createElement('div');
+                value.className = 'volume-bar-value';
+                value.textContent = count > 0 ? count : '';
+
+                const bar = document.createElement('div');
+                bar.className = 'volume-bar';
+                bar.style.height = `${Math.max(4, (count / maxCount) * 100)}%`;
+
+                const label = document.createElement('div');
+                label.className = 'volume-bar-label';
+                label.textContent = offset % 3 === 0 ? getWeekStartLabel(offset) : '';
+
+                col.appendChild(value);
+                col.appendChild(bar);
+                col.appendChild(label);
+                chart.appendChild(col);
+            });
+        }
+
+        // --- Constancia / racha (últimos 84 días) ---
+
+        function getWeekKeyAndDayIndexForDate(date) {
+            return { weekKey: getISOWeekKey(date), dayIndex: (date.getDay() + 6) % 7 };
+        }
+
+        function renderStreakSection() {
+            const days = [];
+            for (let i = 83; i >= 0; i--) {
+                const date = new Date();
+                date.setHours(0, 0, 0, 0);
+                date.setDate(date.getDate() - i);
+                const { weekKey, dayIndex } = getWeekKeyAndDayIndexForDate(date);
+                const sched = peekSchedule(weekKey);
+                const count = sched.morning[dayIndex].length + sched.afternoon[dayIndex].length;
+                days.push({ date, count, isToday: i === 0 });
+            }
+
+            let currentStreak = 0;
+            for (let i = days.length - 1; i >= 0; i--) {
+                if (days[i].count > 0) currentStreak++;
+                else break;
+            }
+
+            let longestStreak = 0;
+            let run = 0;
+            days.forEach(d => {
+                run = d.count > 0 ? run + 1 : 0;
+                if (run > longestStreak) longestStreak = run;
+            });
+
+            document.getElementById('streakCurrent').textContent = `${currentStreak} d`;
+            document.getElementById('streakBest').textContent = `${longestStreak} d`;
+
+            const grid = document.getElementById('heatmapGrid');
+            grid.innerHTML = '';
+
+            days.forEach(({ date, count, isToday }) => {
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell' + (isToday ? ' is-today' : '');
+                const level = count === 0 ? 0 : Math.min(4, count);
+                if (level > 0) cell.dataset.level = level;
+                cell.onclick = () => {
+                    const dateLabel = date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+                    const detail = document.getElementById('heatmapDetail');
+                    detail.textContent = count === 0
+                        ? `${dateLabel} — sin entrenamientos`
+                        : `${dateLabel} — ${count} entrenamiento${count === 1 ? '' : 's'}`;
+                };
+                grid.appendChild(cell);
+            });
+
+            document.getElementById('heatmapDetail').textContent = 'Toca un día para ver el detalle';
         }
 
         function renderStats() {
