@@ -2004,7 +2004,10 @@
             return periodEl;
         }
 
+        const MAX_FUTURE_WEEKS = 5; // permite planificar al menos un mes por delante
+
         function setEditingWeek(offset) {
+            if (offset > MAX_FUTURE_WEEKS) return;
             editingWeekOffset = offset;
             schedule = peekSchedule(getWeekKeyWithOffset(offset));
             renderWeekGrid();
@@ -2016,7 +2019,7 @@
                 label.textContent = editingWeekOffset === 0 ? `Esta semana (${getWeekRangeLabel(0)})` : getWeekRangeLabel(editingWeekOffset);
             }
             const nextBtn = document.getElementById('weekEditNextBtn');
-            if (nextBtn) nextBtn.disabled = editingWeekOffset >= 0;
+            if (nextBtn) nextBtn.disabled = editingWeekOffset >= MAX_FUTURE_WEEKS;
 
             const grid = document.getElementById('weekGrid');
             const dots = document.getElementById('weekDots');
