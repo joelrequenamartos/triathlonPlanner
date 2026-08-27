@@ -1573,21 +1573,38 @@
                 { name: 'Isométricos x4 en banco', series: '4 series' },
                 { name: 'Lunges', series: '3 × 60 s' }
             ],
-            tape: [
-                { name: 'Monster Walk con banda (rodillas y tobillos)', series: '3 × 10-15 pasos' },
-                { name: 'Elevaciones laterales tumbado con banda', series: '3 × 10' },
-                { name: 'Elevaciones frontales sentado con banda', series: '3 × 10' },
-                { name: 'Clamshell lateral con banda', series: '3 × 10' },
-                { name: 'Aperturas sentado con banda en las rodillas', series: '3 × 12-15' },
-                { name: 'Fire Hydrant con banda apoyado en la pared', series: '3 × 10' },
-                { name: 'Step Down lateral banco', series: '3 × 10' },
-                { name: 'Levantarse del banco unilateral', series: '3 × 10' },
-                { name: 'Star reaches', series: '3 × 10' },
-                { name: 'Estiramiento lateral apoyado', series: '3 × 30 s' },
-                { name: 'Cruce de pierna por delante + inclinación contraria', series: '3 × 30 s' },
-                { name: 'Estiramiento pierna cruzada en el suelo', series: '3 × 30 s' },
-                { name: 'Estiramiento piernas en 4', series: '3 × 30 s' }
-            ],
+            tape: {
+                groups: [
+                    {
+                        label: 'Principal',
+                        exercises: [
+                            { name: 'Monster Walk con banda (rodillas y tobillos)', series: '3 × 10-15 pasos' },
+                            { name: 'Elevaciones laterales tumbado con banda', series: '3 × 10' },
+                            { name: 'Elevaciones frontales sentado con banda', series: '3 × 10' },
+                            { name: 'Clamshell lateral con banda', series: '3 × 10' },
+                            { name: 'Aperturas sentado con banda en las rodillas', series: '3 × 12-15' },
+                            { name: 'Fire Hydrant con banda apoyado en la pared', series: '3 × 10' }
+                        ]
+                    },
+                    {
+                        label: 'Control',
+                        exercises: [
+                            { name: 'Step Down lateral banco', series: '3 × 10' },
+                            { name: 'Levantarse del banco unilateral', series: '3 × 10' },
+                            { name: 'Star reaches', series: '3 × 10' }
+                        ]
+                    },
+                    {
+                        label: 'Estiramientos',
+                        exercises: [
+                            { name: 'Estiramiento lateral apoyado', series: '3 × 30 s' },
+                            { name: 'Cruce de pierna por delante + inclinación contraria', series: '3 × 30 s' },
+                            { name: 'Estiramiento pierna cruzada en el suelo', series: '3 × 30 s' },
+                            { name: 'Estiramiento piernas en 4', series: '3 × 30 s' }
+                        ]
+                    }
+                ]
+            },
             mobility: [
                 { name: 'Deep Lunge', series: '3 × 30 s' },
                 { name: 'CARS de cadera', series: '3 × 12 ida y vuelta' },
