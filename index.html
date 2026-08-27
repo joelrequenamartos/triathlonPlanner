@@ -963,7 +963,7 @@
             left: 0;
             right: 0;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             background:
                 linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
                 linear-gradient(180deg, rgba(27, 39, 64, 0.9), rgba(15, 20, 34, 0.98));
@@ -972,7 +972,7 @@
             border-radius: 22px 22px 0 0;
             border-top: 1px solid rgba(216, 37, 48, 0.22);
             box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.4);
-            padding: 5px 2px max(12px, env(safe-area-inset-bottom));
+            padding: 8px 2px max(12px, env(safe-area-inset-bottom));
             z-index: 100;
         }
 
@@ -983,12 +983,13 @@
         }
 
         .nav-btn {
+            position: relative;
             flex: 1;
             min-width: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
             background: none;
             border: none;
             color: var(--text-muted);
@@ -1002,44 +1003,41 @@
         }
 
         .nav-btn .nav-icon {
-            font-size: 19px;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #47536e, #29344c);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0.7;
+            transition: opacity 0.2s;
         }
 
-        .nav-btn:active .nav-icon {
-            transform: scale(0.94);
-        }
-
-        .nav-btn.active .nav-icon {
-            background: linear-gradient(135deg, #5a6786, #354065);
-            border-color: rgba(255, 255, 255, 0.16);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.06);
+        .nav-btn .nav-icon svg {
+            width: 20px;
+            height: 20px;
         }
 
         .nav-btn.active {
             color: var(--red);
         }
 
-        .nav-btn-arc {
-            margin-top: -10px;
+        .nav-btn.active .nav-icon {
+            opacity: 1;
+        }
+
+        .nav-btn.active::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--red);
         }
 
         .nav-today-btn {
             flex-shrink: 0;
-            width: 58px;
-            height: 58px;
-            margin-top: -20px;
+            width: 56px;
+            height: 56px;
+            margin: -26px 6px 0;
             border-radius: 50%;
-            border: 4px solid var(--surface-raised);
+            border: 4px solid var(--ink);
             background: linear-gradient(135deg, var(--red), var(--red-dim));
             color: var(--text);
             display: flex;
@@ -1048,7 +1046,7 @@
             justify-content: center;
             gap: 1px;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(216, 37, 48, 0.5);
+            box-shadow: 0 6px 18px rgba(216, 37, 48, 0.55);
         }
 
         .nav-today-btn:active {
@@ -1056,11 +1054,16 @@
         }
 
         .nav-today-btn.active {
-            box-shadow: 0 0 0 2px var(--red), 0 4px 14px rgba(216, 37, 48, 0.6);
+            box-shadow: 0 0 0 3px rgba(216, 37, 48, 0.3), 0 6px 18px rgba(216, 37, 48, 0.6);
         }
 
         .nav-today-icon {
-            font-size: 20px;
+            display: flex;
+        }
+
+        .nav-today-icon svg {
+            width: 22px;
+            height: 22px;
         }
 
         .nav-today-label {
@@ -1598,27 +1601,37 @@
     <nav class="bottom-nav">
         <div class="nav-side">
             <button class="nav-btn" id="navProgress" onclick="showScreen('progress')">
-                <span class="nav-icon">📈</span>
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+                </span>
                 <span>Progreso</span>
             </button>
-            <button class="nav-btn nav-btn-arc" id="navWeek" onclick="showScreen('week')">
-                <span class="nav-icon">🗓️</span>
+            <button class="nav-btn" id="navWeek" onclick="showScreen('week')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                </span>
                 <span>Semana</span>
             </button>
         </div>
 
         <button class="nav-today-btn active" id="navToday" onclick="showScreen('today')">
-            <span class="nav-today-icon">📅</span>
+            <span class="nav-today-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 15l2 2 4-4"/></svg>
+            </span>
             <span class="nav-today-label">Hoy</span>
         </button>
 
         <div class="nav-side">
-            <button class="nav-btn nav-btn-arc" id="navStats" onclick="showScreen('stats')">
-                <span class="nav-icon">📊</span>
+            <button class="nav-btn" id="navStats" onclick="showScreen('stats')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </span>
                 <span>Estadísticas</span>
             </button>
             <button class="nav-btn" id="navAccount" onclick="showScreen('account')">
-                <span class="nav-icon">👤</span>
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
                 <span>Mi cuenta</span>
             </button>
         </div>
