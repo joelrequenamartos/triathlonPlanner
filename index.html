@@ -1200,7 +1200,8 @@
         }
 
         .exercise-table th.exercise-col-num {
-            text-align: center;
+            text-align: right;
+            width: 40%;
         }
 
         .exercise-table td {
@@ -1211,8 +1212,8 @@
 
         .exercise-table td.exercise-col-num {
             font-family: var(--font-mono);
-            text-align: center;
-            white-space: nowrap;
+            font-size: 11px;
+            text-align: right;
         }
 
         .exercise-table tr:last-child td {
@@ -1539,40 +1540,62 @@
                     {
                         label: 'Principales',
                         exercises: [
-                            { name: 'Sentadilla', series: '4', reps: '8' },
-                            { name: 'Peso muerto rumano', series: '3', reps: '10' }
+                            { name: 'Peso muerto con barra', series: '3 × 10' },
+                            { name: 'Sentadilla búlgara con barra', series: '3 × 6' },
+                            { name: 'Hip Thrust', series: '3 × 6-8' }
                         ]
                     },
                     {
                         label: 'Complementarios',
                         exercises: [
-                            { name: 'Zancadas', series: '3', reps: '10/pierna' },
-                            { name: 'Elevación de talones', series: '3', reps: '15' },
-                            { name: 'Abductores en polea', series: '3', reps: '15/lado' }
+                            { name: 'Elevaciones laterales', series: '3 × 10' },
+                            { name: 'Gemelos / Tibiales', series: '3 × 12-15' },
+                            { name: 'Step Up', series: '3 × 10' },
+                            { name: 'Aductor sentado', series: '3 × 10-15' }
                         ]
                     }
                 ]
             },
             chest: [
-                { name: 'Press banca', series: '4', reps: '8' },
-                { name: 'Remo con barra', series: '4', reps: '10' },
-                { name: 'Press militar', series: '3', reps: '10' },
-                { name: 'Dominadas', series: '3', reps: '8' }
+                { name: 'Press banca', series: '4 × 8' },
+                { name: 'Remo con barra', series: '4 × 10' },
+                { name: 'Press militar', series: '3 × 10' },
+                { name: 'Dominadas', series: '3 × 8' }
             ],
             core: [
-                { name: 'Plancha', series: '3', reps: '45 s' },
-                { name: 'Plancha lateral', series: '3', reps: '30 s/lado' },
-                { name: 'Hollow hold', series: '3', reps: '30 s' }
+                { name: 'Elevación lateral tumbado', series: '3 × 60 s' },
+                { name: 'Plancha lateral', series: '3 × 60 s' },
+                { name: 'Puente de glúteo', series: '3 × 60 s' },
+                { name: 'Monster Walk isométrico', series: '3 × 60 s' },
+                { name: 'Elevaciones frontales con banda', series: '3 × 60 s' },
+                { name: 'Gemelo unilateral a 90°', series: '3 × 60 s' },
+                { name: 'Espalda en la pared (Wall Sit)', series: '3 × 60 s' },
+                { name: 'Isométricos x4 en banco', series: '4 series' },
+                { name: 'Lunges', series: '3 × 60 s' }
             ],
             tape: [
-                { name: 'Clamshells', series: '3', reps: '15/lado' },
-                { name: 'Puente de glúteo', series: '3', reps: '15' },
-                { name: 'Estiramiento banda iliotibial', series: '3', reps: '30 s' }
+                { name: 'Monster Walk con banda (rodillas y tobillos)', series: '3 × 10-15 pasos' },
+                { name: 'Elevaciones laterales tumbado con banda', series: '3 × 10' },
+                { name: 'Elevaciones frontales sentado con banda', series: '3 × 10' },
+                { name: 'Clamshell lateral con banda', series: '3 × 10' },
+                { name: 'Aperturas sentado con banda en las rodillas', series: '3 × 12-15' },
+                { name: 'Fire Hydrant con banda apoyado en la pared', series: '3 × 10' },
+                { name: 'Step Down lateral banco', series: '3 × 10' },
+                { name: 'Levantarse del banco unilateral', series: '3 × 10' },
+                { name: 'Star reaches', series: '3 × 10' },
+                { name: 'Estiramiento lateral apoyado', series: '3 × 30 s' },
+                { name: 'Cruce de pierna por delante + inclinación contraria', series: '3 × 30 s' },
+                { name: 'Estiramiento pierna cruzada en el suelo', series: '3 × 30 s' },
+                { name: 'Estiramiento piernas en 4', series: '3 × 30 s' }
             ],
             mobility: [
-                { name: 'Movilidad de cadera', series: '1', reps: '5 min' },
-                { name: 'Movilidad de tobillo', series: '1', reps: '5 min' },
-                { name: 'Estiramientos dinámicos', series: '1', reps: '5 min' }
+                { name: 'Deep Lunge', series: '3 × 30 s' },
+                { name: 'CARS de cadera', series: '3 × 12 ida y vuelta' },
+                { name: 'Knee Hugs', series: '3 × 20 s' },
+                { name: '90/90', series: '3 × 10' },
+                { name: 'Rana', series: '3 × 10' },
+                { name: 'Rana a una pierna (estirada)', series: '3 × 10' },
+                { name: 'Pierna sobre foam roller', series: '3 × 10' }
             ]
         };
 
@@ -2334,8 +2357,7 @@
                 <thead>
                     <tr>
                         <th>Ejercicio</th>
-                        <th class="exercise-col-num">Series</th>
-                        <th class="exercise-col-num">Reps</th>
+                        <th class="exercise-col-num">Series × Reps</th>
                     </tr>
                 </thead>
             `;
@@ -2345,7 +2367,6 @@
                 tr.innerHTML = `
                     <td>${ex.name}</td>
                     <td class="exercise-col-num">${ex.series}</td>
-                    <td class="exercise-col-num">${ex.reps}</td>
                 `;
                 tbody.appendChild(tr);
             });
