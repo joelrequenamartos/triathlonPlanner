@@ -1002,21 +1002,27 @@
         }
 
         .nav-btn .nav-icon {
-            font-size: 15px;
-            width: 34px;
-            height: 34px;
+            font-size: 19px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--surface-raised), var(--surface));
-            border: 1px solid var(--line);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-            transition: border-color 0.2s;
+            background: linear-gradient(135deg, #47536e, #29344c);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-btn:active .nav-icon {
+            transform: scale(0.94);
         }
 
         .nav-btn.active .nav-icon {
-            border-color: var(--text-muted);
+            background: linear-gradient(135deg, #5a6786, #354065);
+            border-color: rgba(255, 255, 255, 0.16);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.06);
         }
 
         .nav-btn.active {
@@ -1024,7 +1030,7 @@
         }
 
         .nav-btn-arc {
-            margin-top: -6px;
+            margin-top: -10px;
         }
 
         .nav-today-btn {
