@@ -1178,6 +1178,78 @@
             margin-top: 0;
         }
 
+        .exercise-plan-block {
+            margin-bottom: 4px;
+        }
+
+        .exercise-plan-block + .exercise-plan-block {
+            margin-top: 4px;
+            padding-top: 10px;
+            border-top: 1px solid var(--line);
+        }
+
+        .exercise-edit-group-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--steel);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin: 10px 0 4px;
+        }
+
+        .exercise-edit-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .exercise-edit-name {
+            flex: 2;
+            min-width: 0;
+        }
+
+        .exercise-edit-series {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exercise-edit-name,
+        .exercise-edit-series {
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-family: var(--font-body);
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .exercise-edit-remove {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .exercise-edit-add-btn {
+            background: none;
+            border: 1px dashed var(--line);
+            color: var(--steel);
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 6px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
         .exercise-table {
             width: 100%;
             border-collapse: collapse;
@@ -1464,6 +1536,11 @@
             </div>
 
             <div class="stats-container">
+                <div class="stats-label">Editar ejercicios</div>
+                <div id="exercisePlansEditor"></div>
+            </div>
+
+            <div class="stats-container">
                 <button class="exercise-toggle" id="changelogToggle" onclick="toggleChangelog()">▾ Historial de cambios</button>
                 <div id="changelogList" class="exercise-table-wrap"></div>
             </div>
@@ -1535,7 +1612,7 @@
 
         // Tabla de ejercicios de referencia para las actividades de fuerza/movilidad.
         // Solo se muestra en "Hoy" (no es táctil ni aparece en "Semana").
-        const EXERCISE_PLANS = {
+        const DEFAULT_EXERCISE_PLANS = {
             leg: {
                 groups: [
                     {
@@ -1633,6 +1710,7 @@
         let notesStore = {};
         const CURRENT_WEEK_KEY = getISOWeekKey(new Date());
         let scheduleStore = {};
+        let exercisePlans = JSON.parse(JSON.stringify(DEFAULT_EXERCISE_PLANS));
         let editingWeekOffset = 0;
         let schedule = peekSchedule(getWeekKeyWithOffset(editingWeekOffset));
         let draggedItem = null;
@@ -1880,6 +1958,112 @@
                     list.appendChild(li);
                 });
                 container.appendChild(list);
+            });
+        }
+
+        // --- Editor de planes de ejercicios (Pierna, Torso, Isométricos, Cintilla, Movilidad) ---
+
+        function buildExerciseEditRow(exercise, onChange, onRemove) {
+            const row = document.createElement('div');
+            row.className = 'exercise-edit-row';
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.className = 'exercise-edit-name';
+            nameInput.placeholder = 'Ejercicio';
+            nameInput.value = exercise.name;
+            nameInput.oninput = (e) => onChange('name', e.target.value);
+
+            const seriesInput = document.createElement('input');
+            seriesInput.type = 'text';
+            seriesInput.className = 'exercise-edit-series';
+            seriesInput.placeholder = '3 × 10';
+            seriesInput.value = exercise.series;
+            seriesInput.oninput = (e) => onChange('series', e.target.value);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'exercise-edit-remove';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = onRemove;
+
+            row.appendChild(nameInput);
+            row.appendChild(seriesInput);
+            row.appendChild(removeBtn);
+            return row;
+        }
+
+        function buildExerciseEditList(exercises, onDirty) {
+            const wrap = document.createElement('div');
+
+            exercises.forEach((exercise, index) => {
+                wrap.appendChild(buildExerciseEditRow(
+                    exercise,
+                    (field, value) => { exercise[field] = value; queueExercisePlansSync(); },
+                    () => { exercises.splice(index, 1); queueExercisePlansSync(); onDirty(); }
+                ));
+            });
+
+            const addBtn = document.createElement('button');
+            addBtn.className = 'exercise-edit-add-btn';
+            addBtn.textContent = '+ Añadir ejercicio';
+            addBtn.onclick = () => {
+                exercises.push({ name: '', series: '' });
+                queueExercisePlansSync();
+                onDirty();
+            };
+            wrap.appendChild(addBtn);
+
+            return wrap;
+        }
+
+        const openExerciseEditBlocks = new Set();
+
+        function buildExercisePlanBlock(activityType) {
+            const activity = ACTIVITIES[activityType];
+            const isOpen = openExerciseEditBlocks.has(activityType);
+
+            const block = document.createElement('div');
+            block.className = 'exercise-plan-block';
+
+            const toggle = document.createElement('button');
+            toggle.className = 'exercise-toggle';
+            toggle.textContent = `${isOpen ? '▴' : '▾'} ${activity.emoji} ${activity.label}`;
+
+            const body = document.createElement('div');
+            body.className = 'exercise-table-wrap' + (isOpen ? ' open' : '');
+
+            const plan = exercisePlans[activityType];
+            if (Array.isArray(plan)) {
+                body.appendChild(buildExerciseEditList(plan, renderExercisePlansEditor));
+            } else {
+                plan.groups.forEach(group => {
+                    const label = document.createElement('div');
+                    label.className = 'exercise-edit-group-label';
+                    label.textContent = group.label;
+                    body.appendChild(label);
+                    body.appendChild(buildExerciseEditList(group.exercises, renderExercisePlansEditor));
+                });
+            }
+
+            toggle.onclick = () => {
+                const nowOpen = body.classList.toggle('open');
+                if (nowOpen) openExerciseEditBlocks.add(activityType);
+                else openExerciseEditBlocks.delete(activityType);
+                toggle.textContent = `${nowOpen ? '▴' : '▾'} ${activity.emoji} ${activity.label}`;
+            };
+
+            block.appendChild(toggle);
+            block.appendChild(body);
+            return block;
+        }
+
+        function renderExercisePlansEditor() {
+            const container = document.getElementById('exercisePlansEditor');
+            if (!container) return;
+            container.innerHTML = '';
+
+            Object.keys(exercisePlans).forEach(activityType => {
+                container.appendChild(buildExercisePlanBlock(activityType));
             });
         }
 
@@ -2433,7 +2617,7 @@
             const tableWrap = document.createElement('div');
             tableWrap.className = 'exercise-table-wrap';
 
-            const plan = EXERCISE_PLANS[activityType];
+            const plan = exercisePlans[activityType];
             if (Array.isArray(plan)) {
                 tableWrap.appendChild(buildExerciseTable(plan));
             } else {
@@ -2490,7 +2674,7 @@
                         updateActivityNote(CURRENT_WEEK_KEY, dayIndex, period, entry.type, e.target.value);
                     };
                     item.appendChild(note);
-                } else if (EXERCISE_PLANS[entry.type]) {
+                } else if (exercisePlans[entry.type]) {
                     item.appendChild(buildExerciseToggle(entry.type));
                 }
 
@@ -2516,6 +2700,7 @@
             renderStatsScreen();
             renderToday();
             renderChangelog();
+            renderExercisePlansEditor();
         }
 
         // --- Supabase: cuenta y sincronización de datos en la nube ---
@@ -2577,6 +2762,41 @@
             });
         }
 
+        let exercisePlansSyncTimer = null;
+
+        function queueExercisePlansSync() {
+            clearTimeout(exercisePlansSyncTimer);
+            exercisePlansSyncTimer = setTimeout(syncExercisePlansNow, 500);
+        }
+
+        async function syncExercisePlansNow() {
+            if (!currentUser) return;
+            const { error } = await supabaseClient.from('exercise_plans').upsert({
+                user_id: currentUser.id,
+                plans: exercisePlans,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
+
+            if (error) console.error('Error guardando ejercicios en Supabase:', error);
+        }
+
+        async function loadExercisePlansFromSupabase() {
+            const { data, error } = await supabaseClient
+                .from('exercise_plans')
+                .select('plans')
+                .eq('user_id', currentUser.id)
+                .maybeSingle();
+
+            if (error) {
+                console.error('Error cargando ejercicios de Supabase:', error);
+                return;
+            }
+
+            exercisePlans = (data && data.plans && Object.keys(data.plans).length > 0)
+                ? data.plans
+                : JSON.parse(JSON.stringify(DEFAULT_EXERCISE_PLANS));
+        }
+
         function showAuthGate() {
             document.getElementById('authGate').style.display = 'flex';
             document.getElementById('appRoot').style.display = 'none';
@@ -2621,6 +2841,7 @@
         async function onAuthed(user) {
             currentUser = user;
             await loadAllDataFromSupabase();
+            await loadExercisePlansFromSupabase();
             editingWeekOffset = 0;
             statsWeekOffset = 0;
             activeDayIndex = getTodayIndex();
@@ -2633,6 +2854,7 @@
             currentUser = null;
             scheduleStore = {};
             notesStore = {};
+            exercisePlans = JSON.parse(JSON.stringify(DEFAULT_EXERCISE_PLANS));
             document.getElementById('authForm').reset();
             setAuthError('');
             showAuthGate();
