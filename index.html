@@ -1113,6 +1113,64 @@
             font-style: italic;
         }
 
+        .exercise-toggle {
+            background: none;
+            border: none;
+            color: var(--steel);
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 2px 0;
+            align-self: flex-start;
+        }
+
+        .exercise-table-wrap {
+            display: none;
+            margin-top: 4px;
+        }
+
+        .exercise-table-wrap.open {
+            display: block;
+        }
+
+        .exercise-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .exercise-table th {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            text-align: left;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .exercise-table th.exercise-col-num {
+            text-align: center;
+        }
+
+        .exercise-table td {
+            font-size: 12px;
+            padding: 5px 6px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .exercise-table td.exercise-col-num {
+            font-family: var(--font-mono);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .exercise-table tr:last-child td {
+            border-bottom: none;
+        }
+
         /* PANTALLA DE LOGIN */
         .auth-gate {
             position: fixed;
@@ -1424,6 +1482,37 @@
         };
 
         const ACTIVITIES_WITH_NOTES = ['run', 'bike', 'swim'];
+
+        // Tabla de ejercicios de referencia para las actividades de fuerza/movilidad.
+        // Solo se muestra en "Hoy" (no es táctil ni aparece en "Semana").
+        const EXERCISE_PLANS = {
+            leg: [
+                { name: 'Sentadilla', series: '4', reps: '8' },
+                { name: 'Peso muerto rumano', series: '3', reps: '10' },
+                { name: 'Zancadas', series: '3', reps: '10/pierna' }
+            ],
+            chest: [
+                { name: 'Press banca', series: '4', reps: '8' },
+                { name: 'Remo con barra', series: '4', reps: '10' },
+                { name: 'Press militar', series: '3', reps: '10' },
+                { name: 'Dominadas', series: '3', reps: '8' }
+            ],
+            core: [
+                { name: 'Plancha', series: '3', reps: '45 s' },
+                { name: 'Plancha lateral', series: '3', reps: '30 s/lado' },
+                { name: 'Hollow hold', series: '3', reps: '30 s' }
+            ],
+            tape: [
+                { name: 'Clamshells', series: '3', reps: '15/lado' },
+                { name: 'Puente de glúteo', series: '3', reps: '15' },
+                { name: 'Estiramiento banda iliotibial', series: '3', reps: '30 s' }
+            ],
+            mobility: [
+                { name: 'Movilidad de cadera', series: '1', reps: '5 min' },
+                { name: 'Movilidad de tobillo', series: '1', reps: '5 min' },
+                { name: 'Estiramientos dinámicos', series: '1', reps: '5 min' }
+            ]
+        };
 
         const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab', 'Dom'];
         const DAYS_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -2153,6 +2242,53 @@
             return (jsDay + 6) % 7; // 0 = lunes ... 6 = domingo
         }
 
+        function buildExerciseTable(exercises) {
+            const table = document.createElement('table');
+            table.className = 'exercise-table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Ejercicio</th>
+                        <th class="exercise-col-num">Series</th>
+                        <th class="exercise-col-num">Reps</th>
+                    </tr>
+                </thead>
+            `;
+            const tbody = document.createElement('tbody');
+            exercises.forEach(ex => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${ex.name}</td>
+                    <td class="exercise-col-num">${ex.series}</td>
+                    <td class="exercise-col-num">${ex.reps}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            return table;
+        }
+
+        function buildExerciseToggle(activityType) {
+            const wrap = document.createElement('div');
+
+            const toggle = document.createElement('button');
+            toggle.className = 'exercise-toggle';
+            toggle.textContent = '▾ Ver ejercicios';
+
+            const tableWrap = document.createElement('div');
+            tableWrap.className = 'exercise-table-wrap';
+            tableWrap.appendChild(buildExerciseTable(EXERCISE_PLANS[activityType]));
+
+            toggle.onclick = () => {
+                const isOpen = tableWrap.classList.toggle('open');
+                toggle.textContent = isOpen ? '▴ Ocultar ejercicios' : '▾ Ver ejercicios';
+            };
+
+            wrap.appendChild(toggle);
+            wrap.appendChild(tableWrap);
+            return wrap;
+        }
+
         function renderTodayPeriod(containerId, dayIndex, period) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
@@ -2187,6 +2323,8 @@
                         updateActivityNote(CURRENT_WEEK_KEY, dayIndex, period, entry.type, e.target.value);
                     };
                     item.appendChild(note);
+                } else if (EXERCISE_PLANS[entry.type]) {
+                    item.appendChild(buildExerciseToggle(entry.type));
                 }
 
                 container.appendChild(item);
