@@ -845,6 +845,40 @@
             color: var(--text);
             margin-bottom: 18px;
             text-align: left;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .info-separator {
+            border: none;
+            border-top: 1px solid var(--line);
+            margin: 12px 0;
+        }
+
+        .changelog-btn {
+            width: 100%;
+            background: none;
+            border: 1px solid var(--line);
+            color: var(--steel);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 9px;
+            cursor: pointer;
+        }
+
+        .changelog-list {
+            margin: 0;
+            padding-left: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .changelog-list li {
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         .confirm-actions {
@@ -1132,6 +1166,20 @@
 
         .exercise-table-wrap.open {
             display: block;
+        }
+
+        .exercise-group-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--steel);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin: 8px 0 2px;
+        }
+
+        .exercise-group-label:first-child {
+            margin-top: 0;
         }
 
         .exercise-table {
@@ -1486,11 +1534,25 @@
         // Tabla de ejercicios de referencia para las actividades de fuerza/movilidad.
         // Solo se muestra en "Hoy" (no es táctil ni aparece en "Semana").
         const EXERCISE_PLANS = {
-            leg: [
-                { name: 'Sentadilla', series: '4', reps: '8' },
-                { name: 'Peso muerto rumano', series: '3', reps: '10' },
-                { name: 'Zancadas', series: '3', reps: '10/pierna' }
-            ],
+            leg: {
+                groups: [
+                    {
+                        label: 'Principales',
+                        exercises: [
+                            { name: 'Sentadilla', series: '4', reps: '8' },
+                            { name: 'Peso muerto rumano', series: '3', reps: '10' }
+                        ]
+                    },
+                    {
+                        label: 'Complementarios',
+                        exercises: [
+                            { name: 'Zancadas', series: '3', reps: '10/pierna' },
+                            { name: 'Elevación de talones', series: '3', reps: '15' },
+                            { name: 'Abductores en polea', series: '3', reps: '15/lado' }
+                        ]
+                    }
+                ]
+            },
             chest: [
                 { name: 'Press banca', series: '4', reps: '8' },
                 { name: 'Remo con barra', series: '4', reps: '10' },
@@ -1731,6 +1793,27 @@
             document.getElementById('confirmDialog').classList.add('active');
         }
 
+        const CHANGELOG = [
+            'Desplegable de ejercicios (series y reps) en Hoy para pierna, torso, isométricos, cintilla y movilidad, con pierna separada en principales/complementarios.',
+            'Se puede planificar hasta 5 semanas por delante en Semana.',
+            'Botón de info en la cabecera con resumen de cada pantalla.',
+            'Nueva barra inferior con 5 pantallas y un botón central "Hoy".',
+            'Icono propio de la app (favicon).',
+            'Progreso ahora incluye cuenta atrás al objetivo 2027, volumen semanal y racha de constancia.',
+            'Los datos viven en la nube (Supabase): inicia sesión y accede desde cualquier dispositivo.',
+            'Las semanas nuevas empiezan vacías en vez de con un entreno de ejemplo.',
+            'Primera versión: plan personal de triatlón con Hoy, Semana y Progreso.'
+        ];
+
+        function showChangelogDialog() {
+            const items = CHANGELOG.map(entry => `<li>${entry}</li>`).join('');
+            showConfirmDialog(
+                `<ul class="changelog-list">${items}</ul>`,
+                null,
+                { confirmText: 'Cerrar', hideCancel: true, html: true }
+            );
+        }
+
         function showInfoDialog() {
             showConfirmDialog(
                 `La preparación se hace desde <strong>Semana</strong>: ahí añades y organizas tus entrenamientos.<br><br>` +
@@ -1738,7 +1821,9 @@
                 `<strong>Progreso</strong> — objetivo 2027, volumen semanal y racha.<br>` +
                 `<strong>Semana</strong> — planifica y edita cualquier semana.<br>` +
                 `<strong>Estadísticas</strong> — estructura y notas de una semana concreta.<br>` +
-                `<strong>Mi cuenta</strong> — cerrar sesión y borrar datos antiguos.`,
+                `<strong>Mi cuenta</strong> — cerrar sesión y borrar datos antiguos.<br>` +
+                `<hr class="info-separator">` +
+                `<button type="button" class="changelog-btn" onclick="showChangelogDialog()">📋 Historial de cambios</button>`,
                 null,
                 { confirmText: 'Entendido', hideCancel: true, html: true }
             );
@@ -2277,7 +2362,19 @@
 
             const tableWrap = document.createElement('div');
             tableWrap.className = 'exercise-table-wrap';
-            tableWrap.appendChild(buildExerciseTable(EXERCISE_PLANS[activityType]));
+
+            const plan = EXERCISE_PLANS[activityType];
+            if (Array.isArray(plan)) {
+                tableWrap.appendChild(buildExerciseTable(plan));
+            } else {
+                plan.groups.forEach(group => {
+                    const groupLabel = document.createElement('div');
+                    groupLabel.className = 'exercise-group-label';
+                    groupLabel.textContent = group.label;
+                    tableWrap.appendChild(groupLabel);
+                    tableWrap.appendChild(buildExerciseTable(group.exercises));
+                });
+            }
 
             toggle.onclick = () => {
                 const isOpen = tableWrap.classList.toggle('open');
