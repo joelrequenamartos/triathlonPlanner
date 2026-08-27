@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mi Semana de Entrenamientos</title>
     <link rel="icon" type="image/png" href="assets/app-icon.png">
     <link rel="apple-touch-icon" href="assets/app-icon.png">
@@ -966,7 +966,7 @@
             align-items: flex-start;
             background-color: var(--surface-raised);
             border-top: 1px solid var(--line);
-            padding: 5px 2px max(5px, env(safe-area-inset-bottom));
+            padding: 5px 2px max(12px, env(safe-area-inset-bottom));
             z-index: 100;
         }
 
@@ -1001,6 +1001,10 @@
 
         .nav-btn.active {
             color: var(--red);
+        }
+
+        .nav-btn-arc {
+            margin-top: -6px;
         }
 
         .nav-today-btn {
@@ -1571,7 +1575,7 @@
                 <span class="nav-icon">📈</span>
                 <span>Progreso</span>
             </button>
-            <button class="nav-btn" id="navWeek" onclick="showScreen('week')">
+            <button class="nav-btn nav-btn-arc" id="navWeek" onclick="showScreen('week')">
                 <span class="nav-icon">🗓️</span>
                 <span>Semana</span>
             </button>
@@ -1583,7 +1587,7 @@
         </button>
 
         <div class="nav-side">
-            <button class="nav-btn" id="navStats" onclick="showScreen('stats')">
+            <button class="nav-btn nav-btn-arc" id="navStats" onclick="showScreen('stats')">
                 <span class="nav-icon">📊</span>
                 <span>Estadísticas</span>
             </button>
