@@ -100,6 +100,7 @@
             padding: 7px 14px;
             border-radius: 8px;
             box-shadow: 0 4px 14px rgba(var(--red-rgb, 216, 37, 48), 0.35);
+            cursor: pointer;
         }
 
         .header-logo {
@@ -1530,7 +1531,7 @@
         <div class="header">
             <button class="header-info-btn" onclick="showInfoDialog()" title="Info" aria-label="Info">i</button>
             <button class="header-logout-btn" onclick="logout()" title="Cerrar sesión" aria-label="Cerrar sesión">⏻</button>
-            <div class="header-logo-badge">
+            <div class="header-logo-badge" onclick="location.reload()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();location.reload();}" role="button" tabindex="0" title="Recargar" aria-label="Recargar página">
                 <img class="header-logo" id="headerLogo" src="assets/ironman-logo.png" alt="Ironman">
             </div>
             <div class="header-text">
