@@ -722,6 +722,27 @@
             font-weight: 600;
         }
 
+        .garmin-chart-legend {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 6px;
+        }
+
+        .garmin-chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .garmin-chart-legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
         .garmin-activity-list {
             display: flex;
             flex-direction: column;
@@ -1543,16 +1564,11 @@
             </div>
 
             <div class="stats-container">
-                <div class="stats-label">Distancia por sesión</div>
+                <div class="stats-label">Evolución por sesión</div>
                 <div class="garmin-tabs" id="garminPaceTabs"></div>
                 <div class="garmin-chart-caption" id="garminPaceCaption"></div>
+                <div class="garmin-chart-legend" id="garminPaceLegend"></div>
                 <div class="garmin-pace-chart" id="garminPaceChart"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Gimnasio</div>
-                <div class="garmin-chart-caption">Mismo periodo que "Actividad Garmin" arriba</div>
-                <div class="garmin-summary" id="garminGymSummary"></div>
             </div>
 
             <div class="stats-container">
@@ -2901,7 +2917,6 @@
             garminPeriod = key;
             renderGarminPeriodTabs();
             renderGarminSummary();
-            renderGarminGymSummary();
         }
 
         function summarizeGarmin(list) {
@@ -2968,11 +2983,21 @@
             return a.distance_meters / metric.divisor;
         }
 
+        const GARMIN_PACE_TABS = [
+            ...Object.entries(GARMIN_DIST_METRICS).map(([key, m]) => ({ key, label: m.label })),
+            { key: 'gym', label: 'Gimnasio' },
+        ];
+
         function renderGarminPaceChart() {
-            const types = Object.keys(GARMIN_DIST_METRICS);
-            document.getElementById('garminPaceTabs').innerHTML = types.map(t => `
-                <button class="garmin-tab ${t === garminPaceType ? 'active' : ''}" onclick="setGarminPaceType('${t}')">${GARMIN_DIST_METRICS[t].label}</button>
+            document.getElementById('garminPaceTabs').innerHTML = GARMIN_PACE_TABS.map(t => `
+                <button class="garmin-tab ${t.key === garminPaceType ? 'active' : ''}" onclick="setGarminPaceType('${t.key}')">${t.label}</button>
             `).join('');
+
+            if (garminPaceType === 'gym') {
+                renderGarminGymChart();
+                return;
+            }
+            document.getElementById('garminPaceLegend').innerHTML = '';
 
             const metric = GARMIN_DIST_METRICS[garminPaceType];
             const items = garminActivities
@@ -3014,31 +3039,61 @@
             </svg>`;
         }
 
+        // Superpone horas y calorías de las sesiones de gimnasio en un mismo gráfico.
+        // Cada serie se normaliza a su propio rango porque las escalas no son comparables.
+        function renderGarminGymChart() {
+            const items = garminActivities
+                .filter(a => GARMIN_GYM_TYPES.includes(a.type))
+                .slice()
+                .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
+                .slice(-20);
+
+            const captionEl = document.getElementById('garminPaceCaption');
+            const legendEl = document.getElementById('garminPaceLegend');
+            const el = document.getElementById('garminPaceChart');
+
+            const hourSeries = items.map(a => (a.duration_seconds || 0) / 3600);
+            const calSeries = items.map(a => a.calories || 0);
+
+            if (items.length < 2) {
+                captionEl.innerHTML = '';
+                legendEl.innerHTML = '';
+                el.innerHTML = '<div class="stats-empty">No hay suficientes datos todavía.</div>';
+                return;
+            }
+
+            const avgH = hourSeries.reduce((s, v) => s + v, 0) / hourSeries.length;
+            const avgC = calSeries.reduce((s, v) => s + v, 0) / calSeries.length;
+            captionEl.innerHTML = `Gimnasio · horas y calorías por sesión · últimas ${items.length} · media <b>${avgH.toFixed(1)} h</b> · <b>${Math.round(avgC)} kcal</b>`;
+            legendEl.innerHTML = `
+                <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background:var(--red)"></span>Horas</div>
+                <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background:var(--steel)"></span>Calorías</div>
+            `;
+
+            const w = 320, h = 90, pad = 10;
+            const n = items.length;
+            const buildLine = (series, color) => {
+                const min = Math.min(...series), max = Math.max(...series);
+                const range = max - min || 1;
+                const pts = series.map((v, i) => {
+                    const x = pad + (i / (n - 1)) * (w - pad * 2);
+                    const y = pad + (1 - (v - min) / range) * (h - pad * 2);
+                    return { x, y, v };
+                });
+                const line = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+                const dots = pts.map((p, i) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="${color}"><title>${fmtGarminDate(items[i].start_time)} — ${p.v.toFixed(1)}</title></circle>`).join('');
+                return `<polyline points="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>${dots}`;
+            };
+
+            el.innerHTML = `<svg viewBox="0 0 ${w} ${h}">
+                ${buildLine(hourSeries, 'var(--red)')}
+                ${buildLine(calSeries, 'var(--steel)')}
+            </svg>`;
+        }
+
         function setGarminPaceType(type) {
             garminPaceType = type;
             renderGarminPaceChart();
-        }
-
-        function renderGarminGymSummary() {
-            const days = GARMIN_PERIODS.find(p => p.key === garminPeriod).days;
-            const since = Date.now() - days * 24 * 3600 * 1000;
-            const recent = garminActivities.filter(a =>
-                GARMIN_GYM_TYPES.includes(a.type) &&
-                new Date(a.start_time.replace(' ', 'T')).getTime() >= since
-            );
-            const totalDur = recent.reduce((s, a) => s + (a.duration_seconds || 0), 0);
-            const totalCal = recent.reduce((s, a) => s + (a.calories || 0), 0);
-            const items = [
-                { label: 'Sesiones', value: recent.length },
-                { label: 'Tiempo', value: fmtGarminDur(totalDur) },
-                { label: 'Calorías', value: Math.round(totalCal).toLocaleString('es-ES') },
-            ];
-            document.getElementById('garminGymSummary').innerHTML = items.map(i => `
-                <div class="garmin-summary-item">
-                    <div class="garmin-summary-value">${i.value}</div>
-                    <div class="garmin-summary-label">${i.label}</div>
-                </div>
-            `).join('');
         }
 
         function setGarminListPage(page) {
@@ -3135,7 +3190,6 @@
         function renderGarminSection() {
             renderGarminPeriodTabs();
             renderGarminSummary();
-            renderGarminGymSummary();
             renderGarminWeekSummary();
             renderGarminPaceChart();
             renderGarminActivityList();
