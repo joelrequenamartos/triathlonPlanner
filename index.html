@@ -826,9 +826,14 @@
             display: none;
         }
 
-        /* El fondo del mapa (tiles OSM) va siempre claro, quitamos el filtro oscuro de Leaflet por defecto */
-        .garmin-detail-map .leaflet-tile-pane {
-            filter: saturate(0.9) brightness(0.95);
+        .garmin-detail-map .leaflet-control-attribution {
+            background: rgba(11, 15, 26, 0.7);
+            color: var(--text-muted);
+            font-size: 9px;
+        }
+
+        .garmin-detail-map .leaflet-control-attribution a {
+            color: var(--text-muted);
         }
 
         .garmin-detail-grid {
@@ -3255,9 +3260,13 @@
 
             if (!a.polyline || a.polyline.length < 2) return; // sin traza GPS: el div queda vacío y se oculta
 
-            const map = L.map(mapEl, { zoomControl: false, attributionControl: false });
+            const map = L.map(mapEl, { zoomControl: false, attributionControl: true });
             const track = L.polyline(a.polyline, { color: '#d82530', weight: 3 }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20,
+                subdomains: 'abcd',
+                attribution: '© OpenStreetMap, © CARTO',
+            }).addTo(map);
             map.fitBounds(track.getBounds(), { padding: [12, 12] });
             garminDetailMapInstance = map;
 
