@@ -795,14 +795,14 @@
             margin-top: 2px;
         }
 
-        .garmin-pace-tabs {
+        .garmin-tabs {
             display: flex;
             gap: 6px;
             margin-bottom: 12px;
             flex-wrap: wrap;
         }
 
-        .garmin-pace-tab {
+        .garmin-tab {
             background-color: var(--ink);
             border: 1px solid var(--line);
             color: var(--text-muted);
@@ -816,7 +816,7 @@
             cursor: pointer;
         }
 
-        .garmin-pace-tab.active {
+        .garmin-tab.active {
             border-color: var(--red);
             color: var(--red);
         }
@@ -1658,6 +1658,34 @@
                 <div class="heatmap-grid" id="heatmapGrid"></div>
                 <div class="heatmap-detail" id="heatmapDetail">Toca un día para ver el detalle</div>
             </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Actividad Garmin</div>
+                <div class="garmin-tabs" id="garminPeriodTabs"></div>
+                <div class="garmin-summary" id="garminSummary"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Semana a semana</div>
+                <div class="day-nav">
+                    <button class="day-nav-btn" id="garminWeekPrevBtn" onclick="setGarminWeekOffset(garminWeekOffset - 1)">‹</button>
+                    <div class="day-nav-current" id="garminWeekLabel"></div>
+                    <button class="day-nav-btn" id="garminWeekNextBtn" onclick="setGarminWeekOffset(garminWeekOffset + 1)">›</button>
+                </div>
+                <div class="garmin-summary" id="garminWeekSummary"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Ritmo / evolución</div>
+                <div class="garmin-tabs" id="garminPaceTabs"></div>
+                <div class="garmin-pace-chart" id="garminPaceChart"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Actividades</div>
+                <div class="garmin-activity-list" id="garminActivityList"></div>
+                <div class="day-nav" id="garminListPager"></div>
+            </div>
         </div>
 
         <!-- PANTALLA ESTADÍSTICAS -->
@@ -1698,29 +1726,6 @@
             </div>
         </div>
 
-        <!-- PANTALLA HISTORIAL GARMIN -->
-        <div class="screen" id="screen-history">
-            <div class="stats-container">
-                <div class="stats-label">Últimos 7 días</div>
-                <div class="garmin-summary" id="garminSummary"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Horas por semana</div>
-                <div class="volume-chart" id="garminWeeklyChart"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Ritmo / evolución</div>
-                <div class="garmin-pace-tabs" id="garminPaceTabs"></div>
-                <div class="garmin-pace-chart" id="garminPaceChart"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Actividades</div>
-                <div class="garmin-activity-list" id="garminActivityList"></div>
-            </div>
-        </div>
     </div>
 
     <!-- HOJA PARA AÑADIR ACTIVIDAD -->
@@ -1770,12 +1775,6 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 </span>
                 <span>Estadísticas</span>
-            </button>
-            <button class="nav-btn" id="navHistory" onclick="showScreen('history')">
-                <span class="nav-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
-                </span>
-                <span>Historial</span>
             </button>
             <button class="nav-btn" id="navAccount" onclick="showScreen('account')">
                 <span class="nav-icon">
@@ -2333,6 +2332,7 @@
             renderGoalCountdown();
             renderVolumeChart();
             renderStreakSection();
+            renderGarminSection();
         }
 
         // --- Objetivo 2027 ---
@@ -2745,14 +2745,12 @@
             document.getElementById('screen-week').classList.toggle('active', name === 'week');
             document.getElementById('screen-progress').classList.toggle('active', name === 'progress');
             document.getElementById('screen-stats').classList.toggle('active', name === 'stats');
-            document.getElementById('screen-history').classList.toggle('active', name === 'history');
             document.getElementById('screen-account').classList.toggle('active', name === 'account');
 
             document.getElementById('navToday').classList.toggle('active', name === 'today');
             document.getElementById('navWeek').classList.toggle('active', name === 'week');
             document.getElementById('navProgress').classList.toggle('active', name === 'progress');
             document.getElementById('navStats').classList.toggle('active', name === 'stats');
-            document.getElementById('navHistory').classList.toggle('active', name === 'history');
             document.getElementById('navAccount').classList.toggle('active', name === 'account');
 
             if (name === 'progress') {
@@ -2760,9 +2758,6 @@
             }
             if (name === 'stats') {
                 renderStatsScreen();
-            }
-            if (name === 'history') {
-                renderHistoryScreen();
             }
             if (name === 'today') {
                 renderToday();
@@ -3105,15 +3100,6 @@
             return dt.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
         }
 
-        function garminIsoWeekKey(dateStr) {
-            const d = new Date(dateStr.replace(' ', 'T'));
-            d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
-            const week1 = new Date(d.getFullYear(), 0, 4);
-            const weekNum = 1 + Math.round(((d - week1) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
-            return { key: `${d.getFullYear()}-W${String(weekNum).padStart(2, '0')}`, sortDate: d };
-        }
-
         function garminPaceValue(a) {
             const distKm = (a.distance_meters || 0) / 1000;
             const durH = (a.moving_duration_seconds || a.duration_seconds || 0) / 3600;
@@ -3124,19 +3110,47 @@
             return null;
         }
 
-        function renderGarminSummary() {
-            const since = Date.now() - 7 * 24 * 3600 * 1000;
-            const recent = garminActivities.filter(a => new Date(a.start_time.replace(' ', 'T')).getTime() >= since);
-            const totalDist = recent.reduce((s, a) => s + (a.distance_meters || 0), 0);
-            const totalDur = recent.reduce((s, a) => s + (a.duration_seconds || 0), 0);
-            const totalCal = recent.reduce((s, a) => s + (a.calories || 0), 0);
-            const items = [
-                { label: 'Actividades', value: recent.length },
+        const GARMIN_PERIODS = [
+            { key: 'week', label: 'Semana', days: 7 },
+            { key: 'month', label: 'Mes', days: 30 },
+            { key: 'quarter', label: 'Trimestre', days: 91 },
+            { key: 'half', label: '6 meses', days: 182 },
+            { key: 'year', label: 'Año', days: 365 },
+        ];
+        let garminPeriod = 'week';
+        let garminWeekOffset = 0;
+        let garminListPage = 0;
+        const GARMIN_LIST_PAGE_SIZE = 10;
+
+        function renderGarminPeriodTabs() {
+            document.getElementById('garminPeriodTabs').innerHTML = GARMIN_PERIODS.map(p => `
+                <button class="garmin-tab ${p.key === garminPeriod ? 'active' : ''}" onclick="setGarminPeriod('${p.key}')">${p.label}</button>
+            `).join('');
+        }
+
+        function setGarminPeriod(key) {
+            garminPeriod = key;
+            renderGarminPeriodTabs();
+            renderGarminSummary();
+        }
+
+        function summarizeGarmin(list) {
+            const totalDist = list.reduce((s, a) => s + (a.distance_meters || 0), 0);
+            const totalDur = list.reduce((s, a) => s + (a.duration_seconds || 0), 0);
+            const totalCal = list.reduce((s, a) => s + (a.calories || 0), 0);
+            return [
+                { label: 'Actividades', value: list.length },
                 { label: 'Distancia', value: (totalDist / 1000).toFixed(1) + ' km' },
                 { label: 'Tiempo', value: fmtGarminDur(totalDur) },
                 { label: 'Calorías', value: Math.round(totalCal).toLocaleString('es-ES') },
             ];
-            document.getElementById('garminSummary').innerHTML = items.map(i => `
+        }
+
+        function renderGarminSummary() {
+            const days = GARMIN_PERIODS.find(p => p.key === garminPeriod).days;
+            const since = Date.now() - days * 24 * 3600 * 1000;
+            const recent = garminActivities.filter(a => new Date(a.start_time.replace(' ', 'T')).getTime() >= since);
+            document.getElementById('garminSummary').innerHTML = summarizeGarmin(recent).map(i => `
                 <div class="garmin-summary-item">
                     <div class="garmin-summary-value">${i.value}</div>
                     <div class="garmin-summary-label">${i.label}</div>
@@ -3144,40 +3158,45 @@
             `).join('');
         }
 
-        function renderGarminWeeklyChart() {
-            const byWeek = new Map();
-            garminActivities.forEach(a => {
-                const { key, sortDate } = garminIsoWeekKey(a.start_time);
-                if (!byWeek.has(key)) byWeek.set(key, { hours: 0, sortDate });
-                byWeek.get(key).hours += (a.duration_seconds || 0) / 3600;
-            });
-            const weeks = [...byWeek.entries()]
-                .map(([key, v]) => ({ key, ...v }))
-                .sort((a, b) => a.sortDate - b.sortDate)
-                .slice(-10);
+        function getGarminWeekBounds(offsetWeeks) {
+            const now = new Date();
+            const monday = new Date(now);
+            const dayNum = (now.getDay() + 6) % 7;
+            monday.setHours(0, 0, 0, 0);
+            monday.setDate(now.getDate() - dayNum + offsetWeeks * 7);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 7);
+            return { monday, sunday };
+        }
 
-            const el = document.getElementById('garminWeeklyChart');
-            if (!weeks.length) {
-                el.innerHTML = '<div class="stats-empty">Sin datos todavía. Cuando el sync automático corra por primera vez, aparecerán aquí.</div>';
-                return;
-            }
-            const maxH = Math.max(...weeks.map(w => w.hours), 1);
-            const currentKey = garminIsoWeekKey(new Date().toISOString().slice(0, 10) + ' 00:00:00').key;
-            el.innerHTML = weeks.map(w => {
-                const pct = Math.max(4, (w.hours / maxH) * 100);
-                const isCurrent = w.key === currentKey;
-                return `<div class="volume-bar-col ${isCurrent ? 'is-current' : ''}">
-                    <div class="volume-bar-value">${w.hours.toFixed(1)}h</div>
-                    <div class="volume-bar" style="height:${pct}%"></div>
-                    <div class="volume-bar-label">S${w.key.split('-W')[1]}</div>
-                </div>`;
-            }).join('');
+        function setGarminWeekOffset(offset) {
+            if (offset > 0) offset = 0;
+            garminWeekOffset = offset;
+            renderGarminWeekSummary();
+        }
+
+        function renderGarminWeekSummary() {
+            const { monday, sunday } = getGarminWeekBounds(garminWeekOffset);
+            const label = garminWeekOffset === 0 ? 'Esta semana' : getWeekRangeLabel(garminWeekOffset);
+            document.getElementById('garminWeekLabel').textContent = garminWeekOffset === 0 ? `Esta semana (${getWeekRangeLabel(0)})` : label;
+            document.getElementById('garminWeekNextBtn').disabled = garminWeekOffset >= 0;
+
+            const weekActivities = garminActivities.filter(a => {
+                const t = new Date(a.start_time.replace(' ', 'T')).getTime();
+                return t >= monday.getTime() && t < sunday.getTime();
+            });
+            document.getElementById('garminWeekSummary').innerHTML = summarizeGarmin(weekActivities).map(i => `
+                <div class="garmin-summary-item">
+                    <div class="garmin-summary-value">${i.value}</div>
+                    <div class="garmin-summary-label">${i.label}</div>
+                </div>
+            `).join('');
         }
 
         function renderGarminPaceChart() {
             const types = ['cycling', 'running', 'lap_swimming'];
             document.getElementById('garminPaceTabs').innerHTML = types.map(t => `
-                <button class="garmin-pace-tab ${t === garminPaceType ? 'active' : ''}" onclick="setGarminPaceType('${t}')">${GARMIN_TYPE_LABELS[t]}</button>
+                <button class="garmin-tab ${t === garminPaceType ? 'active' : ''}" onclick="setGarminPaceType('${t}')">${GARMIN_TYPE_LABELS[t]}</button>
             `).join('');
 
             const items = garminActivities
@@ -3218,13 +3237,26 @@
             renderGarminPaceChart();
         }
 
+        function setGarminListPage(page) {
+            const maxPage = Math.max(0, Math.ceil(garminActivities.length / GARMIN_LIST_PAGE_SIZE) - 1);
+            garminListPage = Math.min(Math.max(0, page), maxPage);
+            renderGarminActivityList();
+        }
+
         function renderGarminActivityList() {
             const el = document.getElementById('garminActivityList');
+            const pagerEl = document.getElementById('garminListPager');
             if (!garminActivities.length) {
                 el.innerHTML = '<div class="stats-empty">Todavía no hay actividades sincronizadas desde Garmin.</div>';
+                pagerEl.innerHTML = '';
                 return;
             }
-            el.innerHTML = garminActivities.slice(0, 30).map(a => `
+
+            const totalPages = Math.ceil(garminActivities.length / GARMIN_LIST_PAGE_SIZE);
+            const start = garminListPage * GARMIN_LIST_PAGE_SIZE;
+            const page = garminActivities.slice(start, start + GARMIN_LIST_PAGE_SIZE);
+
+            el.innerHTML = page.map(a => `
                 <div class="garmin-activity-card">
                     <div class="garmin-activity-dot ${a.type}"></div>
                     <div class="garmin-activity-main">
@@ -3234,11 +3266,22 @@
                     <div class="garmin-activity-date">${fmtGarminDate(a.start_time)}</div>
                 </div>
             `).join('');
+
+            if (totalPages <= 1) {
+                pagerEl.innerHTML = '';
+                return;
+            }
+            pagerEl.innerHTML = `
+                <button class="day-nav-btn" ${garminListPage === 0 ? 'disabled' : ''} onclick="setGarminListPage(garminListPage - 1)">‹</button>
+                <div class="day-nav-current">Página ${garminListPage + 1} de ${totalPages}</div>
+                <button class="day-nav-btn" ${garminListPage >= totalPages - 1 ? 'disabled' : ''} onclick="setGarminListPage(garminListPage + 1)">›</button>
+            `;
         }
 
-        function renderHistoryScreen() {
+        function renderGarminSection() {
+            renderGarminPeriodTabs();
             renderGarminSummary();
-            renderGarminWeeklyChart();
+            renderGarminWeekSummary();
             renderGarminPaceChart();
             renderGarminActivityList();
         }
