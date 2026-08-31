@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root {
             --ink: #0b0f1a;
@@ -809,6 +811,24 @@
             font-size: 12px;
             color: var(--text-muted);
             margin: -8px 0 12px;
+        }
+
+        .garmin-detail-map {
+            height: 180px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            background-color: var(--ink);
+            border: 1px solid var(--line);
+        }
+
+        .garmin-detail-map:empty {
+            display: none;
+        }
+
+        /* El fondo del mapa (tiles OSM) va siempre claro, quitamos el filtro oscuro de Leaflet por defecto */
+        .garmin-detail-map .leaflet-tile-pane {
+            filter: saturate(0.9) brightness(0.95);
         }
 
         .garmin-detail-grid {
@@ -1642,6 +1662,7 @@
         <div class="sheet-handle"></div>
         <div class="sheet-title" id="garminDetailTitle"></div>
         <div class="garmin-detail-date" id="garminDetailDate"></div>
+        <div class="garmin-detail-map" id="garminDetailMap"></div>
         <div class="garmin-detail-grid" id="garminDetailGrid"></div>
     </div>
 
@@ -3216,13 +3237,41 @@
                 <div><div class="k">${k}</div><div class="v">${v}</div></div>
             `).join('');
 
+            renderGarminDetailMap(a);
+
             document.getElementById('garminDetailBackdrop').classList.add('active');
             document.getElementById('garminDetailSheet').classList.add('active');
+        }
+
+        let garminDetailMapInstance = null;
+
+        function renderGarminDetailMap(a) {
+            const mapEl = document.getElementById('garminDetailMap');
+            if (garminDetailMapInstance) {
+                garminDetailMapInstance.remove();
+                garminDetailMapInstance = null;
+            }
+            mapEl.innerHTML = '';
+
+            if (!a.polyline || a.polyline.length < 2) return; // sin traza GPS: el div queda vacío y se oculta
+
+            const map = L.map(mapEl, { zoomControl: false, attributionControl: false });
+            const track = L.polyline(a.polyline, { color: '#d82530', weight: 3 }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+            map.fitBounds(track.getBounds(), { padding: [12, 12] });
+            garminDetailMapInstance = map;
+
+            // La hoja todavía está deslizándose al abrirse: recalculamos el tamaño cuando termine.
+            setTimeout(() => map.invalidateSize(), 300);
         }
 
         function closeGarminDetail() {
             document.getElementById('garminDetailBackdrop').classList.remove('active');
             document.getElementById('garminDetailSheet').classList.remove('active');
+            if (garminDetailMapInstance) {
+                garminDetailMapInstance.remove();
+                garminDetailMapInstance = null;
+            }
         }
 
         function renderGarminSection() {

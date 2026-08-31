@@ -29,7 +29,38 @@ def env(name, required=True, default=None):
     return value
 
 
-def to_row(user_id, activity):
+MAX_POLYLINE_POINTS = 150
+
+
+def fetch_polyline(client, activity_id):
+    """Trae la traza GPS de una actividad y la reduce a un puñado de puntos [lat, lon].
+
+    Devuelve None si la actividad no tiene GPS (indoor, piscina, etc.) o si Garmin
+    no puede darnos el detalle por cualquier motivo — nunca rompe el resto del sync.
+    """
+    try:
+        details = client.get_activity_details(activity_id, maxpoly=MAX_POLYLINE_POINTS)
+    except Exception as exc:  # noqa: BLE001 - el sync de otras actividades debe seguir
+        print(f"  aviso: no se pudo obtener la traza de {activity_id}: {exc}", file=sys.stderr)
+        return None
+
+    raw_points = (details.get("geoPolylineDTO") or {}).get("polyline") or []
+    points = [
+        [p["lat"], p["lon"]]
+        for p in raw_points
+        if p.get("lat") is not None and p.get("lon") is not None
+    ]
+    if len(points) < 2:
+        return None
+
+    if len(points) > MAX_POLYLINE_POINTS:
+        stride = len(points) / MAX_POLYLINE_POINTS
+        points = [points[int(i * stride)] for i in range(MAX_POLYLINE_POINTS)]
+
+    return points
+
+
+def to_row(user_id, activity, polyline):
     return {
         "user_id": user_id,
         "activity_id": activity["activityId"],
@@ -46,6 +77,7 @@ def to_row(user_id, activity):
         "elevation_gain_meters": activity.get("elevationGain"),
         "elevation_loss_meters": activity.get("elevationLoss"),
         "steps": activity.get("steps"),
+        "polyline": polyline,
     }
 
 
@@ -82,7 +114,10 @@ def main():
     client.login()
 
     activities = client.get_activities(0, limit)
-    rows = [to_row(user_id, a) for a in activities]
+    rows = [
+        to_row(user_id, a, fetch_polyline(client, a["activityId"]))
+        for a in activities
+    ]
 
     upsert_rows(supabase_url, service_key, rows)
 
