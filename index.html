@@ -1510,6 +1510,16 @@
                 <div class="today-datelabel" id="todayDateLabel"></div>
             </div>
 
+            <div class="stats-container">
+                <div class="stats-label">Última actividad</div>
+                <div class="garmin-activity-list" id="todayLastActivity"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Esta semana</div>
+                <div class="garmin-summary" id="todayWeekSummary"></div>
+            </div>
+
             <div class="today-period">
                 <div class="today-period-title">Mañana</div>
                 <div class="today-activities" id="todayMorning"></div>
@@ -2660,6 +2670,34 @@
 
             renderTodayPeriod('todayMorning', dayIndex, 'morning');
             renderTodayPeriod('todayAfternoon', dayIndex, 'afternoon');
+            renderTodayGarminSummary();
+        }
+
+        function renderTodayGarminSummary() {
+            const lastEl = document.getElementById('todayLastActivity');
+            const last = garminActivities[0]; // ya viene ordenado por start_time desc
+            lastEl.innerHTML = last ? `
+                <div class="garmin-activity-card" onclick="openGarminDetail(${last.activity_id})">
+                    <div class="garmin-activity-dot ${last.type}"></div>
+                    <div class="garmin-activity-main">
+                        <div class="garmin-activity-name">${last.name || GARMIN_TYPE_LABELS[last.type] || last.type}</div>
+                        <div class="garmin-activity-meta">${fmtGarminDist(last.distance_meters)} · ${fmtGarminDur(last.duration_seconds)}${last.calories ? ' · ' + Math.round(last.calories) + ' kcal' : ''}</div>
+                    </div>
+                    <div class="garmin-activity-date">${fmtGarminDate(last.start_time)}</div>
+                </div>
+            ` : '<div class="stats-empty">Todavía no hay actividades sincronizadas desde Garmin.</div>';
+
+            const { monday, sunday } = getGarminWeekBounds(0);
+            const weekActivities = garminActivities.filter(a => {
+                const t = new Date(a.start_time.replace(' ', 'T')).getTime();
+                return t >= monday.getTime() && t < sunday.getTime();
+            });
+            document.getElementById('todayWeekSummary').innerHTML = summarizeGarmin(weekActivities).map(i => `
+                <div class="garmin-summary-item">
+                    <div class="garmin-summary-value">${i.value}</div>
+                    <div class="garmin-summary-label">${i.label}</div>
+                </div>
+            `).join('');
         }
 
         function render() {
