@@ -711,6 +711,17 @@
             display: block;
         }
 
+        .garmin-chart-caption {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .garmin-chart-caption b {
+            color: var(--text);
+            font-weight: 600;
+        }
+
         .garmin-activity-list {
             display: flex;
             flex-direction: column;
@@ -1532,9 +1543,16 @@
             </div>
 
             <div class="stats-container">
-                <div class="stats-label">Ritmo / evolución</div>
+                <div class="stats-label">Distancia por sesión</div>
                 <div class="garmin-tabs" id="garminPaceTabs"></div>
+                <div class="garmin-chart-caption" id="garminPaceCaption"></div>
                 <div class="garmin-pace-chart" id="garminPaceChart"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stats-label">Gimnasio</div>
+                <div class="garmin-chart-caption">Mismo periodo que "Actividad Garmin" arriba</div>
+                <div class="garmin-summary" id="garminGymSummary"></div>
             </div>
 
             <div class="stats-container">
@@ -2808,6 +2826,15 @@
             strength_training: 'Gimnasio (fuerza)', cardio_training: 'Gimnasio (cardio)'
         };
 
+        // "other" es lo que usa el usuario para marcar sus sesiones de gimnasio en Garmin.
+        const GARMIN_GYM_TYPES = ['other', 'strength_training', 'cardio_training'];
+
+        const GARMIN_DIST_METRICS = {
+            cycling: { label: 'Ciclismo', unit: 'km', divisor: 1000, decimals: 1 },
+            running: { label: 'Running', unit: 'km', divisor: 1000, decimals: 2 },
+            lap_swimming: { label: 'Natación', unit: 'm', divisor: 1, decimals: 0 },
+        };
+
         async function loadGarminActivities() {
             if (!currentUser) return;
             const { data, error } = await supabaseClient
@@ -2874,6 +2901,7 @@
             garminPeriod = key;
             renderGarminPeriodTabs();
             renderGarminSummary();
+            renderGarminGymSummary();
         }
 
         function summarizeGarmin(list) {
@@ -2935,39 +2963,51 @@
             `).join('');
         }
 
+        function garminDistanceValue(a, metric) {
+            if (!a.distance_meters) return null;
+            return a.distance_meters / metric.divisor;
+        }
+
         function renderGarminPaceChart() {
-            const types = ['cycling', 'running', 'lap_swimming'];
+            const types = Object.keys(GARMIN_DIST_METRICS);
             document.getElementById('garminPaceTabs').innerHTML = types.map(t => `
-                <button class="garmin-tab ${t === garminPaceType ? 'active' : ''}" onclick="setGarminPaceType('${t}')">${GARMIN_TYPE_LABELS[t]}</button>
+                <button class="garmin-tab ${t === garminPaceType ? 'active' : ''}" onclick="setGarminPaceType('${t}')">${GARMIN_DIST_METRICS[t].label}</button>
             `).join('');
 
+            const metric = GARMIN_DIST_METRICS[garminPaceType];
             const items = garminActivities
                 .filter(a => a.type === garminPaceType)
                 .slice()
                 .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
                 .slice(-20);
 
+            const captionEl = document.getElementById('garminPaceCaption');
             const el = document.getElementById('garminPaceChart');
-            const vals = items.map(garminPaceValue).filter(v => v != null);
+            const vals = items.map(a => garminDistanceValue(a, metric)).filter(v => v != null);
+
             if (vals.length < 2) {
+                captionEl.innerHTML = '';
                 el.innerHTML = '<div class="stats-empty">No hay suficientes datos todavía.</div>';
                 return;
             }
-            const invert = garminPaceType !== 'cycling'; // min/km y min/100m: más bajo es mejor
-            const w = 320, h = 90, pad = 10;
+
             const min = Math.min(...vals), max = Math.max(...vals);
+            const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+            const fmt = v => v.toFixed(metric.decimals) + ' ' + metric.unit;
+            captionEl.innerHTML = `${metric.label} · ${metric.unit === 'km' ? 'km' : 'metros'} por sesión · últimas ${items.length} · mín <b>${fmt(min)}</b> · media <b>${fmt(avg)}</b> · máx <b>${fmt(max)}</b>`;
+
             const range = max - min || 1;
+            const w = 320, h = 90, pad = 10;
             const n = items.length;
             const pts = items.map((a, i) => {
-                const v = garminPaceValue(a);
+                const v = garminDistanceValue(a, metric);
                 const x = pad + (i / (n - 1)) * (w - pad * 2);
-                let yNorm = v == null ? 0.5 : (v - min) / range;
-                if (invert) yNorm = 1 - yNorm;
+                const yNorm = v == null ? 0.5 : (v - min) / range;
                 const y = pad + (1 - yNorm) * (h - pad * 2);
                 return { x, y, v, a };
             });
             const line = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-            const dots = pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="var(--red)"><title>${fmtGarminDate(p.a.start_time)} — ${p.v.toFixed(1)}</title></circle>`).join('');
+            const dots = pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="var(--red)"><title>${fmtGarminDate(p.a.start_time)} — ${fmt(p.v)}</title></circle>`).join('');
             el.innerHTML = `<svg viewBox="0 0 ${w} ${h}">
                 <polyline points="${line}" fill="none" stroke="var(--red)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
                 ${dots}
@@ -2977,6 +3017,28 @@
         function setGarminPaceType(type) {
             garminPaceType = type;
             renderGarminPaceChart();
+        }
+
+        function renderGarminGymSummary() {
+            const days = GARMIN_PERIODS.find(p => p.key === garminPeriod).days;
+            const since = Date.now() - days * 24 * 3600 * 1000;
+            const recent = garminActivities.filter(a =>
+                GARMIN_GYM_TYPES.includes(a.type) &&
+                new Date(a.start_time.replace(' ', 'T')).getTime() >= since
+            );
+            const totalDur = recent.reduce((s, a) => s + (a.duration_seconds || 0), 0);
+            const totalCal = recent.reduce((s, a) => s + (a.calories || 0), 0);
+            const items = [
+                { label: 'Sesiones', value: recent.length },
+                { label: 'Tiempo', value: fmtGarminDur(totalDur) },
+                { label: 'Calorías', value: Math.round(totalCal).toLocaleString('es-ES') },
+            ];
+            document.getElementById('garminGymSummary').innerHTML = items.map(i => `
+                <div class="garmin-summary-item">
+                    <div class="garmin-summary-value">${i.value}</div>
+                    <div class="garmin-summary-label">${i.label}</div>
+                </div>
+            `).join('');
         }
 
         function setGarminListPage(page) {
@@ -3073,6 +3135,7 @@
         function renderGarminSection() {
             renderGarminPeriodTabs();
             renderGarminSummary();
+            renderGarminGymSummary();
             renderGarminWeekSummary();
             renderGarminPaceChart();
             renderGarminActivityList();
