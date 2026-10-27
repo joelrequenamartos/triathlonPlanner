@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" href="assets/app-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -24,9 +24,20 @@
             --red-dim: #a41d26;
             --text: #eef2f8;
             --text-muted: #8391ab;
-            --font-display: 'Rajdhani', 'Inter', sans-serif;
+            --grad-a: #f4513a;
+            --grad-b: #c41a3a;
+            --gradient: linear-gradient(135deg, var(--grad-a), var(--grad-b));
+            /* Color por disciplina (las de fuerza y recuperación comparten color; el icono las distingue).
+               Carrera, bici, natación y fuerza son las series de los gráficos: validadas en luminosidad,
+               daltonismo y contraste sobre los fondos de los 3 temas. */
+            --sport-run: #ed4c01;
+            --sport-bike: #03ac89;
+            --sport-swim: #3a79ff;
+            --sport-strength: #c524b6;
+            --sport-recovery: #d99a00;
+            --sport-other: #6079a8;
+            --font-display: 'Barlow Condensed', 'Inter', sans-serif;
             --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
         }
 
         * {
@@ -69,13 +80,13 @@
         .header-info-btn {
             position: absolute;
             top: 2px;
-            width: 30px;
-            height: 30px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             border: 1px solid var(--line);
-            background-color: var(--surface);
+            background-color: var(--surface-raised);
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -118,22 +129,23 @@
 
         h1 {
             font-family: var(--font-display);
-            font-size: 17px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.01em;
             text-align: center;
             margin: 0;
         }
 
         .header-subtitle {
-            font-family: var(--font-mono);
-            font-size: 9px;
-            font-weight: 500;
-            color: var(--steel);
-            margin-top: 3px;
+            font-family: var(--font-body);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--grad-a);
+            margin-top: 5px;
             text-align: center;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.14em;
         }
 
         .main-wrapper {
@@ -171,7 +183,7 @@
             bottom: 0;
             background-color: var(--surface-raised);
             border-top: 1px solid var(--line);
-            border-radius: 16px 16px 0 0;
+            border-radius: 24px 24px 0 0;
             padding: 10px 16px max(16px, env(safe-area-inset-bottom));
             transform: translateY(100%);
             transition: transform 0.25s ease;
@@ -192,12 +204,13 @@
 
         .sheet-title {
             font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--steel);
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.05;
+            color: var(--text);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            margin-bottom: 12px;
+            letter-spacing: 0.01em;
+            margin-bottom: 14px;
         }
 
         .sheet-grid {
@@ -208,24 +221,19 @@
         }
 
         .sheet-activity-btn {
-            padding: 12px 6px 10px;
-            border: 1px solid var(--line);
-            border-top: 3px solid var(--accent, var(--line));
-            border-radius: 8px;
+            padding: 14px 6px 12px;
+            border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+            border-radius: 16px;
             font-family: var(--font-body);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            background-color: var(--surface);
+            background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), var(--surface) 80%);
             color: var(--text);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
-        }
-
-        .sheet-activity-btn .sheet-emoji {
-            font-size: 20px;
+            gap: 8px;
         }
 
         .sheet-activity-btn:disabled {
@@ -234,14 +242,14 @@
         }
 
         .period-add-btn {
-            background: none;
-            border: 1px solid var(--line);
-            color: var(--red);
+            background-color: rgba(var(--red-rgb, 216, 37, 48), 0.16);
+            border: none;
+            color: var(--text);
             font-family: var(--font-body);
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
-            border-radius: 6px;
-            padding: 3px 8px;
+            border-radius: 999px;
+            padding: 5px 12px;
             cursor: pointer;
         }
 
@@ -254,12 +262,12 @@
 
         .week-picker-btn {
             flex-shrink: 0;
-            width: 26px;
-            height: 26px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             border: 1px solid var(--line);
-            background-color: var(--surface);
-            color: var(--steel);
+            background-color: var(--surface-raised);
+            color: var(--text-muted);
             font-size: 13px;
             font-weight: bold;
             line-height: 1;
@@ -278,11 +286,10 @@
             flex: 1;
             min-width: 0;
             text-align: center;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 500;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 0.02em;
         }
 
         .day-nav {
@@ -294,13 +301,13 @@
 
         .day-nav-btn {
             flex-shrink: 0;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(135deg, var(--red), var(--red-dim));
-            color: var(--text);
-            font-size: 17px;
+            background: var(--gradient);
+            color: #fff;
+            font-size: 18px;
             font-weight: bold;
             line-height: 1;
             cursor: pointer;
@@ -326,10 +333,17 @@
             min-width: 0;
             text-align: center;
             font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.1;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.01em;
+        }
+
+        /* Etiquetas largas ("Esta semana (26 oct – 1 nov)") en una sola línea */
+        .stats-container .day-nav-current,
+        #screen-stats .day-nav-current {
+            font-size: 17px;
         }
 
         .week-carousel {
@@ -355,20 +369,20 @@
         }
 
         .week-dot.active {
-            background-color: var(--red);
-            width: 18px;
+            background: var(--gradient);
+            width: 20px;
             border-radius: 4px;
         }
 
         .week-overview-label {
             font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 10px;
-            margin-bottom: 6px;
+            letter-spacing: 0.01em;
+            margin-top: 16px;
+            margin-bottom: 8px;
         }
 
         .week-overview {
@@ -382,22 +396,22 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            padding: 5px 2px;
-            border-radius: 8px;
+            padding: 6px 2px;
+            border-radius: 12px;
             background-color: var(--surface);
-            border: 1px solid var(--line);
+            border: 1.5px solid var(--line);
             cursor: pointer;
             min-width: 0;
         }
 
         .week-overview-day.active {
-            border-color: var(--red);
-            background-color: rgba(var(--red-rgb, 216, 37, 48), 0.1);
+            border-color: transparent;
+            background: linear-gradient(var(--surface-raised), var(--surface-raised)) padding-box, var(--gradient) border-box;
         }
 
         .week-overview-daylabel {
-            font-family: var(--font-mono);
-            font-size: 9px;
+            font-family: var(--font-display);
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -420,11 +434,6 @@
             border-top: 1px solid var(--line);
         }
 
-        .week-overview-emoji {
-            font-size: 13px;
-            line-height: 1;
-        }
-
         .week-overview-empty {
             color: var(--line);
             font-size: 12px;
@@ -434,7 +443,7 @@
             display: none;
             background-color: var(--surface);
             border: 1px solid var(--line);
-            border-radius: 10px;
+            border-radius: 20px;
             flex-direction: column;
             height: 42vh;
             width: 100%;
@@ -444,7 +453,6 @@
 
         .day-column.active {
             display: flex;
-            border-color: var(--steel);
         }
 
         .day-period {
@@ -464,14 +472,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-family: var(--font-mono);
-            font-size: 10px;
+            font-family: var(--font-display);
+            font-size: 15px;
             font-weight: 700;
             color: var(--text-muted);
-            padding: 6px 8px;
+            padding: 8px 10px 8px 14px;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            background-color: var(--ink);
+            letter-spacing: 0.06em;
+            background-color: rgba(0, 0, 0, 0.18);
         }
 
         .activities-container {
@@ -486,17 +494,16 @@
         }
 
         .activity-item {
-            padding: 8px 10px;
-            background-color: var(--surface-raised);
-            border: 1px solid var(--line);
-            border-left: 3px solid var(--accent, var(--line));
-            border-radius: 6px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--surface-raised)), var(--surface-raised) 75%);
+            border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+            border-radius: 14px;
             font-size: 13px;
             font-weight: 600;
             color: var(--text);
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             min-width: 0;
             width: 100%;
             box-sizing: border-box;
@@ -507,11 +514,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 6px;
-        }
-
-        .activity-emoji {
-            font-size: 14px;
+            gap: 10px;
         }
 
         .activity-name {
@@ -520,7 +523,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-size: 13px;
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
         }
 
         .btn-remove {
@@ -543,10 +550,10 @@
             width: 100%;
             min-width: 0;
             box-sizing: border-box;
-            background-color: var(--ink);
+            background-color: rgba(0, 0, 0, 0.28);
             border: 1px solid var(--line);
-            border-radius: 6px;
-            padding: 8px 8px;
+            border-radius: 10px;
+            padding: 8px 10px;
             font-family: var(--font-body);
             font-size: 12px;
             font-weight: 400;
@@ -566,33 +573,71 @@
             outline-offset: 1px;
         }
 
-        /* Colores por disciplina/actividad (variable --accent usada en tarjetas) */
-        .bg-run { --accent: #d82530; }
-        .bg-bike { --accent: #6786b8; }
-        .bg-swim { --accent: #38bdf8; }
-        .bg-leg { --accent: #f59e0b; }
-        .bg-chest { --accent: #a78bfa; }
-        .bg-isometric { --accent: #2dd4bf; }
-        .bg-plyometric { --accent: #fb923c; }
-        .bg-mobility { --accent: #4ade80; }
-        .bg-tape { --accent: #f472b6; }
+        /* Colores por disciplina/actividad (variable --accent usada en tarjetas, iconos y barras) */
+        .bg-run { --accent: var(--sport-run); }
+        .bg-bike { --accent: var(--sport-bike); }
+        .bg-swim { --accent: var(--sport-swim); }
+        .bg-leg, .bg-chest, .bg-isometric, .bg-plyometric, .bg-strength { --accent: var(--sport-strength); }
+        .bg-mobility, .bg-tape { --accent: var(--sport-recovery); }
+        .bg-other { --accent: var(--sport-other); }
+
+        .sport-icon {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent, var(--sport-other));
+            color: #fff;
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--accent, var(--sport-other)) 40%, transparent);
+        }
+
+        .sport-icon svg {
+            width: 58%;
+            height: 58%;
+        }
+
+        .sport-icon.lg {
+            width: 42px;
+            height: 42px;
+        }
+
+        .sport-icon.sm {
+            width: 26px;
+            height: 26px;
+            box-shadow: none;
+        }
+
+        .sport-icon.xs {
+            width: 20px;
+            height: 20px;
+            box-shadow: none;
+        }
+
+        .sport-icon.xs svg {
+            width: 64%;
+            height: 64%;
+        }
 
         .stats-container {
-            margin-top: 12px;
+            margin-top: 14px;
             background-color: var(--surface);
             border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 20px;
+            padding: 16px;
         }
 
         .stats-label {
             font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 12px;
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.05;
+            color: var(--text);
+            margin-bottom: 14px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.01em;
         }
 
         .stats-grid {
@@ -604,46 +649,45 @@
         .stat-item {
             background-color: var(--ink);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 10px 12px;
+            border-radius: 14px;
+            padding: 12px;
         }
 
         .stat-item-top {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .stat-emoji {
-            font-size: 18px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .stat-name {
             flex: 1;
-            font-size: 13px;
-            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
             color: var(--text);
         }
 
         .stat-count {
-            font-family: var(--font-mono);
-            color: var(--red);
-            font-weight: 700;
-            font-size: 13px;
+            font-family: var(--font-display);
+            color: var(--text);
+            font-weight: 800;
+            font-size: 24px;
         }
 
         .stat-bar-track {
-            height: 6px;
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 4px;
             background-color: var(--surface);
             overflow: hidden;
         }
 
         .stat-bar-fill {
             height: 100%;
-            border-radius: 3px;
-            background: linear-gradient(90deg, var(--red), var(--steel));
+            border-radius: 4px;
+            background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 45%, var(--surface)), var(--accent));
             transition: width 0.3s ease;
         }
 
@@ -663,23 +707,25 @@
         .garmin-summary-item {
             background-color: var(--ink);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 10px 12px;
+            border-radius: 14px;
+            padding: 12px 14px;
         }
 
         .garmin-summary-value {
-            font-family: var(--font-mono);
-            font-size: 18px;
-            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1;
             color: var(--text);
         }
 
         .garmin-summary-label {
             font-size: 10px;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            margin-top: 2px;
+            letter-spacing: 0.08em;
+            margin-top: 6px;
         }
 
         .garmin-tabs {
@@ -690,22 +736,24 @@
         }
 
         .garmin-tab {
-            background-color: var(--ink);
+            background-color: var(--surface-raised);
             border: 1px solid var(--line);
             color: var(--text-muted);
             font-family: var(--font-display);
-            font-size: 11px;
+            font-size: 15px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            padding: 5px 10px;
+            letter-spacing: 0.02em;
+            padding: 5px 13px;
             border-radius: 999px;
             cursor: pointer;
         }
 
         .garmin-tab.active {
-            border-color: var(--red);
-            color: var(--red);
+            border-color: transparent;
+            background: var(--gradient);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(var(--red-rgb, 216, 37, 48), 0.35);
         }
 
         .garmin-pace-chart svg {
@@ -755,25 +803,12 @@
         .garmin-activity-card {
             background-color: var(--ink);
             border: 1px solid var(--line);
-            border-radius: 8px;
+            border-radius: 14px;
             padding: 10px 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
-
-        .garmin-activity-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            background-color: var(--steel);
-        }
-        .garmin-activity-dot.cycling, .garmin-activity-dot.indoor_cycling { background-color: #3ea6ff; }
-        .garmin-activity-dot.running, .garmin-activity-dot.treadmill_running { background-color: #ff9f43; }
-        .garmin-activity-dot.lap_swimming { background-color: #26d0a4; }
-        .garmin-activity-dot.other, .garmin-activity-dot.walking { background-color: #a78bfa; }
-        .garmin-activity-dot.strength_training, .garmin-activity-dot.cardio_training { background-color: var(--red); }
 
         .garmin-activity-main {
             flex: 1;
@@ -781,7 +816,7 @@
         }
 
         .garmin-activity-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text);
             white-space: nowrap;
@@ -790,15 +825,17 @@
         }
 
         .garmin-activity-meta {
-            font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
         .garmin-activity-date {
-            font-family: var(--font-mono);
-            font-size: 10px;
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
             color: var(--text-muted);
             text-align: right;
             white-space: nowrap;
@@ -811,12 +848,11 @@
         .garmin-detail-date {
             font-size: 12px;
             color: var(--text-muted);
-            margin: -8px 0 12px;
         }
 
         .garmin-detail-map {
-            height: 180px;
-            border-radius: 10px;
+            height: 190px;
+            border-radius: 16px;
             overflow: hidden;
             margin-bottom: 16px;
             background-color: var(--ink);
@@ -846,15 +882,17 @@
 
         .garmin-detail-grid .k {
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.08em;
         }
 
         .garmin-detail-grid .v {
-            font-family: var(--font-mono);
-            font-size: 15px;
-            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.1;
             color: var(--text);
             margin-top: 2px;
         }
@@ -889,52 +927,60 @@
         .progress-item {
             background-color: var(--ink);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 10px 12px;
+            border-radius: 14px;
+            padding: 12px 14px;
             min-width: 0;
         }
 
         .progress-label {
             font-size: 10px;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.08em;
         }
 
         .progress-value {
-            font-family: var(--font-mono);
-            font-size: 18px;
-            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.05;
             color: var(--text);
-            margin-top: 2px;
+            margin-top: 4px;
             white-space: nowrap;
         }
 
         .progress-meta {
             display: flex;
-            align-items: baseline;
+            align-items: center;
             justify-content: space-between;
             gap: 6px;
-            margin-top: 4px;
-            font-family: var(--font-mono);
-            font-size: 10px;
+            margin-top: 6px;
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
             color: var(--text-muted);
         }
 
         .progress-delta {
             font-weight: 700;
             white-space: nowrap;
+            padding: 1px 7px;
+            border-radius: 999px;
+            background-color: rgba(255, 255, 255, 0.06);
         }
 
-        .progress-delta.good { color: var(--good); }
+        .progress-delta.good {
+            color: var(--good);
+            background-color: rgba(63, 191, 127, 0.15);
+        }
         .progress-delta.bad,
         .progress-delta.flat { color: var(--text-muted); }
 
         .garmin-summary-sub {
-            font-family: var(--font-mono);
-            font-size: 10px;
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
             color: var(--text-muted);
-            margin-top: 3px;
+            margin-top: 4px;
         }
 
         .v2-chart svg {
@@ -946,17 +992,25 @@
         .v2-chart-axis {
             display: flex;
             justify-content: space-between;
-            font-family: var(--font-mono);
-            font-size: 9px;
+            font-size: 10px;
             color: var(--text-muted);
             margin-top: 4px;
         }
 
         .v2-subtitle {
-            font-size: 11px;
-            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            text-transform: uppercase;
             color: var(--text);
-            margin: 16px 0 8px;
+            margin: 20px 0 10px;
+        }
+
+        .v2-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            margin-bottom: 8px;
         }
 
         .zone-bar {
@@ -980,8 +1034,8 @@
             gap: 4px 10px;
             align-items: center;
             margin-top: 10px;
-            font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
             color: var(--text-muted);
         }
 
@@ -1003,12 +1057,23 @@
 
         .garmin-detail-section-title {
             font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin: 18px 0 10px;
+            letter-spacing: 0.01em;
+            margin: 20px 0 10px;
+        }
+
+        .garmin-detail-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .garmin-detail-head .sheet-title {
+            margin-bottom: 2px;
         }
 
         #garminDetailSheet {
@@ -1028,17 +1093,18 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            background: var(--gradient);
             border: none;
-            color: var(--text);
+            color: #fff;
             font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            border-radius: 10px;
-            padding: 12px;
+            letter-spacing: 0.02em;
+            border-radius: 14px;
+            padding: 13px;
             cursor: pointer;
+            box-shadow: 0 6px 18px rgba(var(--red-rgb, 216, 37, 48), 0.35);
         }
 
         .story-open-btn svg {
@@ -1070,10 +1136,10 @@
 
         .story-editor-title {
             font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.01em;
         }
 
         .story-close-btn {
@@ -1158,11 +1224,11 @@
             min-width: 16px;
             height: 16px;
             border-radius: 8px;
-            background-color: var(--red);
-            color: var(--text);
-            font-family: var(--font-mono);
-            font-size: 10px;
-            font-weight: 700;
+            background: var(--gradient);
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .story-row {
@@ -1176,20 +1242,20 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
-            padding: 11px 12px;
+            border-radius: 14px;
+            padding: 12px;
             font-family: var(--font-display);
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 17px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
             cursor: pointer;
         }
 
         .story-btn-primary {
-            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            background: var(--gradient);
             border: none;
-            color: var(--text);
+            color: #fff;
         }
 
         .story-btn-secondary {
@@ -1230,8 +1296,8 @@
             box-sizing: border-box;
             background-color: var(--surface);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 11px 14px;
+            border-radius: 12px;
+            padding: 12px 14px;
             font-family: var(--font-body);
             font-size: 14px;
             font-weight: 600;
@@ -1252,7 +1318,7 @@
             transform: translateY(-50%) scale(0.95);
             background-color: var(--surface-raised);
             border: 1px solid var(--line);
-            border-radius: 14px;
+            border-radius: 22px;
             padding: 20px 18px;
             opacity: 0;
             pointer-events: none;
@@ -1277,12 +1343,12 @@
         }
 
         .changelog-day {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--steel);
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--grad-a);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.02em;
             margin-top: 14px;
         }
 
@@ -1311,11 +1377,11 @@
 
         .confirm-btn {
             flex: 1;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 11px;
             font-family: var(--font-body);
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
         }
 
@@ -1326,9 +1392,9 @@
         }
 
         .confirm-ok {
-            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            background: var(--gradient);
             border: none;
-            color: var(--text);
+            color: #fff;
         }
 
         .notes-log {
@@ -1339,11 +1405,11 @@
 
         .notes-log-day {
             font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--steel);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.01em;
             margin-top: 6px;
         }
 
@@ -1353,22 +1419,20 @@
 
         .notes-log-item {
             display: flex;
-            align-items: flex-start;
-            gap: 8px;
+            align-items: center;
+            gap: 10px;
             background-color: var(--ink);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 8px 10px;
+            border-radius: 14px;
+            padding: 10px 12px;
             font-size: 13px;
-        }
-
-        .notes-log-item .stat-emoji {
-            font-size: 15px;
+            line-height: 1.4;
         }
 
         .notes-log-text {
             flex: 1;
-            color: #cbd5e1;
+            color: var(--text);
+            opacity: 0.85;
         }
 
         .notes-log-activity {
@@ -1421,10 +1485,10 @@
             border: none;
             color: var(--text-muted);
             font-family: var(--font-display);
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.03em;
             padding: 6px 1px;
             cursor: pointer;
         }
@@ -1465,8 +1529,8 @@
             margin: -24px 6px 0;
             border-radius: 50%;
             border: 3px solid rgba(5, 7, 12, 0.55);
-            background: linear-gradient(135deg, var(--red), var(--red-dim));
-            color: var(--text);
+            background: var(--gradient);
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1495,8 +1559,8 @@
 
         .nav-today-label {
             font-family: var(--font-display);
-            font-size: 9px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.02em;
         }
@@ -1506,42 +1570,94 @@
             padding: 0 6px;
         }
 
-        .today-header {
+        .today-hero {
+            position: relative;
+            overflow: hidden;
+            background: var(--gradient);
+            border-radius: 24px;
+            padding: 18px 18px 16px;
             margin-bottom: 14px;
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(var(--red-rgb, 216, 37, 48), 0.32);
+        }
+
+        /* Círculos decorativos del degradado */
+        .today-hero::before,
+        .today-hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .today-hero::before {
+            width: 190px;
+            height: 190px;
+            right: -50px;
+            top: -80px;
+        }
+
+        .today-hero::after {
+            width: 110px;
+            height: 110px;
+            right: 60px;
+            bottom: -70px;
         }
 
         .today-daylabel {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--steel);
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.85);
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.1em;
         }
 
         .today-datelabel {
             font-family: var(--font-display);
-            font-size: 19px;
-            font-weight: 700;
+            font-size: 46px;
+            font-weight: 800;
+            line-height: 0.92;
             text-transform: uppercase;
-            margin-top: 2px;
+            margin-top: 4px;
+        }
+
+        .today-hero-meta {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .today-hero-meta .sport-icon {
+            background-color: #fff;
+            color: var(--accent);
+            box-shadow: none;
+        }
+
+        .today-hero-meta span:last-child {
+            margin-left: 4px;
         }
 
         .today-period {
             background-color: var(--surface);
             border: 1px solid var(--line);
-            border-radius: 10px;
+            border-radius: 20px;
             padding: 14px;
             margin-bottom: 12px;
         }
 
         .today-period-title {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.08em;
             margin-bottom: 10px;
         }
 
@@ -1552,33 +1668,37 @@
         }
 
         .today-activity-item {
-            padding: 10px 12px;
-            background-color: var(--surface-raised);
-            border: 1px solid var(--line);
-            border-left: 3px solid var(--accent, var(--line));
-            border-radius: 8px;
+            padding: 12px;
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 24%, var(--surface-raised)), var(--surface-raised) 75%);
+            border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+            border-radius: 16px;
             font-size: 14px;
             font-weight: 600;
             color: var(--text);
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .today-activity-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
         }
 
         .today-activity-note {
             display: block;
             width: 100%;
             box-sizing: border-box;
-            background-color: var(--ink);
+            background-color: rgba(0, 0, 0, 0.28);
             border: 1px solid var(--line);
-            border-radius: 6px;
-            padding: 8px 10px;
+            border-radius: 10px;
+            padding: 9px 11px;
             font-family: var(--font-body);
             font-size: 13px;
             font-weight: 400;
@@ -1606,13 +1726,16 @@
         .exercise-toggle {
             background: none;
             border: none;
-            color: var(--steel);
+            color: var(--text-muted);
             font-family: var(--font-body);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             padding: 2px 0;
             align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .exercise-table-wrap {
@@ -1625,13 +1748,13 @@
         }
 
         .exercise-group-label {
-            font-family: var(--font-mono);
-            font-size: 9px;
+            font-family: var(--font-display);
+            font-size: 13px;
             font-weight: 700;
-            color: var(--steel);
+            color: var(--accent, var(--steel));
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            margin: 8px 0 2px;
+            letter-spacing: 0.06em;
+            margin: 10px 0 2px;
         }
 
         .exercise-group-label:first-child {
@@ -1649,12 +1772,12 @@
         }
 
         .exercise-edit-group-label {
-            font-family: var(--font-mono);
-            font-size: 9px;
+            font-family: var(--font-display);
+            font-size: 13px;
             font-weight: 700;
             color: var(--steel);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.06em;
             margin: 10px 0 4px;
         }
 
@@ -1716,12 +1839,12 @@
         }
 
         .exercise-table th {
-            font-family: var(--font-mono);
+            font-family: var(--font-body);
             font-size: 9px;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.08em;
             text-align: left;
             padding: 4px 6px;
             border-bottom: 1px solid var(--line);
@@ -1739,8 +1862,9 @@
         }
 
         .exercise-table td.exercise-col-num {
-            font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
             text-align: right;
         }
 
@@ -1773,7 +1897,7 @@
             justify-content: center;
             background-color: #f4f6fa;
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 18px;
             box-shadow: 0 4px 14px rgba(var(--red-rgb, 216, 37, 48), 0.35);
         }
@@ -1786,11 +1910,12 @@
 
         .auth-title {
             font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            margin-bottom: 4px;
+            letter-spacing: 0.01em;
+            margin-bottom: 6px;
         }
 
         .auth-subtitle {
@@ -1811,8 +1936,8 @@
             box-sizing: border-box;
             background-color: var(--surface);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 12px 14px;
+            border-radius: 12px;
+            padding: 13px 14px;
             font-family: var(--font-body);
             font-size: 14px;
             color: var(--text);
@@ -1831,15 +1956,15 @@
 
         .auth-submit-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--red), var(--red-dim));
+            background: var(--gradient);
             border: none;
-            color: var(--text);
+            color: #fff;
             font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 19px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            border-radius: 8px;
+            letter-spacing: 0.02em;
+            border-radius: 14px;
             padding: 12px;
             cursor: pointer;
             margin-top: 4px;
@@ -1858,8 +1983,8 @@
             font-family: var(--font-body);
             font-size: 13px;
             font-weight: 600;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 11px;
             cursor: pointer;
             margin-bottom: 8px;
         }
@@ -1899,9 +2024,10 @@
 
         <!-- PANTALLA HOY -->
         <div class="screen active" id="screen-today">
-            <div class="today-header">
+            <div class="today-hero">
                 <div class="today-daylabel" id="todayDayLabel"></div>
                 <div class="today-datelabel" id="todayDateLabel"></div>
+                <div class="today-hero-meta" id="todayHeroMeta"></div>
             </div>
 
             <div class="today-period">
@@ -1977,6 +2103,7 @@
             <div class="stats-container">
                 <div class="stats-label">Carga y zonas de FC</div>
                 <div class="v2-caption" id="loadCaption"></div>
+                <div class="v2-legend" id="loadLegend"></div>
                 <div class="v2-chart" id="loadChart"></div>
                 <div class="v2-chart-axis" id="loadAxis"></div>
                 <div class="v2-subtitle">Tiempo por zonas · últimos 28 días</div>
@@ -2061,8 +2188,13 @@
     <div class="sheet-backdrop" id="garminDetailBackdrop" onclick="closeGarminDetail()"></div>
     <div class="activity-sheet" id="garminDetailSheet">
         <div class="sheet-handle"></div>
-        <div class="sheet-title" id="garminDetailTitle"></div>
-        <div class="garmin-detail-date" id="garminDetailDate"></div>
+        <div class="garmin-detail-head">
+            <div id="garminDetailIcon"></div>
+            <div>
+                <div class="sheet-title" id="garminDetailTitle"></div>
+                <div class="garmin-detail-date" id="garminDetailDate"></div>
+            </div>
+        </div>
         <div class="garmin-detail-map" id="garminDetailMap"></div>
         <div class="garmin-detail-grid" id="garminDetailGrid"></div>
         <div id="garminDetailZones"></div>
@@ -2180,16 +2312,40 @@
 
     <script>
         const ACTIVITIES = {
-            run: { label: 'Carrera', emoji: '🏃', color: 'bg-run' },
-            bike: { label: 'Bicicleta', emoji: '🚴', color: 'bg-bike' },
-            swim: { label: 'Natación', emoji: '🏊', color: 'bg-swim' },
-            leg: { label: 'Pierna', emoji: '🏋️', color: 'bg-leg' },
-            chest: { label: 'Torso', emoji: '💪', color: 'bg-chest' },
-            tape: { label: 'Cintilla', emoji: '🩹', color: 'bg-tape' },
-            core: { label: 'Isométricos', emoji: '🦵', color: 'bg-isometric' },
-            plyometric: { label: 'Pliométricos', emoji: '⚡', color: 'bg-plyometric' },
-            mobility: { label: 'Movilidad', emoji: '🧘', color: 'bg-mobility' }
+            run: { label: 'Carrera', color: 'bg-run' },
+            bike: { label: 'Bicicleta', color: 'bg-bike' },
+            swim: { label: 'Natación', color: 'bg-swim' },
+            leg: { label: 'Pierna', color: 'bg-leg' },
+            chest: { label: 'Torso', color: 'bg-chest' },
+            tape: { label: 'Cintilla', color: 'bg-tape' },
+            core: { label: 'Isométricos', color: 'bg-isometric' },
+            plyometric: { label: 'Pliométricos', color: 'bg-plyometric' },
+            mobility: { label: 'Movilidad', color: 'bg-mobility' }
         };
+
+        // Iconos de línea 24×24 (mismo estilo que los de la barra inferior). Las claves son
+        // las de ACTIVITIES más las familias de Garmin ('strength', 'other').
+        const SPORT_ICONS = {
+            run: '<circle cx="13" cy="4" r="1"/><path d="M4 17l5 1l.75-1.5"/><path d="M15 21v-4l-4-3l1-6"/><path d="M7 12V9l5-1l3 3l3 1"/>',
+            bike: '<circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="M12 19v-4l-3-3l5-4l2 3h3"/><circle cx="17" cy="5" r="1"/>',
+            swim: '<circle cx="16" cy="9" r="1"/><path d="M6 11l4-2l3.5 3l-1.5 2"/><path d="M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2-1a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2-1a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1-.25"/>',
+            leg: '<path d="M2 12h1"/><path d="M6 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2"/><rect x="6" y="6" width="3" height="12" rx="1"/><path d="M9 12h6"/><rect x="15" y="6" width="3" height="12" rx="1"/><path d="M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/><path d="M22 12h-1"/>',
+            chest: '<path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>',
+            core: '<path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/>',
+            plyometric: '<path d="M13 2L4 14h8l-1 8l9-12h-8l1-8z"/>',
+            tape: '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 6v12"/><path d="M18 6v12"/><path d="M10 10h.01"/><path d="M14 10h.01"/><path d="M10 14h.01"/><path d="M14 14h.01"/>',
+            mobility: '<circle cx="12" cy="4.5" r="2"/><path d="M12 7v6"/><path d="M12 9l-5 3.5"/><path d="M12 9l5 3.5"/><path d="M5 19c1.5-3.5 4.5-5 7-5s5.5 1.5 7 5"/><path d="M4 20h16"/>',
+            strength: '<path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>',
+            other: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+        };
+
+        function sportIconHtml(iconKey, colorClass, size = '') {
+            return `<span class="sport-icon ${size} ${colorClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${SPORT_ICONS[iconKey]}</svg></span>`;
+        }
+
+        function activityIconHtml(type, size = '') {
+            return sportIconHtml(type, ACTIVITIES[type].color, size);
+        }
 
         const ACTIVITIES_WITH_NOTES = ['run', 'bike', 'swim'];
 
@@ -2402,7 +2558,7 @@
                 const btn = document.createElement('button');
                 btn.className = `sheet-activity-btn ${activity.color}`;
                 btn.disabled = alreadyAdded.includes(key);
-                btn.innerHTML = `<span class="sheet-emoji">${activity.emoji}</span><span>${activity.label}</span>`;
+                btn.innerHTML = `${activityIconHtml(key, 'lg')}<span>${activity.label}</span>`;
                 btn.onclick = () => addActivityToDayPeriod(dayIndex, period, key);
                 grid.appendChild(btn);
             });
@@ -2499,6 +2655,8 @@
             {
                 date: '27 oct 2026',
                 items: [
+                    'Rediseño visual: tipografía estilo Nike Run Club, un color por deporte (carrera, bici, natación, fuerza y recuperación), iconos propios en lugar de emojis, degradados en lo destacado y tarjeta de cabecera en Hoy.',
+                    'Carga semanal apilada por deporte y gráficos de bienestar con degradado; la ruta del mapa y de las historias usa el color del deporte.',
                     'Historias desde cualquier actividad: con tu foto de fondo o como overlay PNG transparente para pegar en Instagram. Eliges qué datos salen (y en qué orden), ruta, zonas de FC, posición y alineación.',
                     'Progreso → Progresión: compara las últimas 4 semanas, 3 o 6 meses con el periodo anterior (VO2 máx, horas, distancia, velocidad en bici, ritmo de carrera y natación, FC en reposo, carga, desnivel).',
                     'Progreso → Forma y bienestar: FC en reposo, VO2 máx, Body Battery, estrés, pasos, minutos de intensidad y respiración, con gráfico de cada una (y sueño/HRV si tu reloj los registra).',
@@ -2636,7 +2794,10 @@
 
             const toggle = document.createElement('button');
             toggle.className = 'exercise-toggle';
-            toggle.textContent = `${isOpen ? '▴' : '▾'} ${activity.emoji} ${activity.label}`;
+            const setToggleLabel = open => {
+                toggle.innerHTML = `<span>${open ? '▴' : '▾'}</span>${activityIconHtml(activityType, 'sm')}<span>${activity.label}</span>`;
+            };
+            setToggleLabel(isOpen);
 
             const body = document.createElement('div');
             body.className = 'exercise-table-wrap' + (isOpen ? ' open' : '');
@@ -2658,7 +2819,7 @@
                 const nowOpen = body.classList.toggle('open');
                 if (nowOpen) openExerciseEditBlocks.add(activityType);
                 else openExerciseEditBlocks.delete(activityType);
-                toggle.textContent = `${nowOpen ? '▴' : '▾'} ${activity.emoji} ${activity.label}`;
+                setToggleLabel(nowOpen);
             };
 
             block.appendChild(toggle);
@@ -2746,10 +2907,10 @@
             entries.forEach(([key, activity]) => {
                 const count = counts[key];
                 const stat = document.createElement('div');
-                stat.className = 'stat-item';
+                stat.className = `stat-item ${activity.color}`;
                 stat.innerHTML = `
                     <div class="stat-item-top">
-                        <span class="stat-emoji">${activity.emoji}</span>
+                        ${activityIconHtml(key, 'sm')}
                         <span class="stat-name">${activity.label}</span>
                         <span class="stat-count">${count}×</span>
                     </div>
@@ -2779,7 +2940,7 @@
                     (statsSchedule[period][dayIndex] || []).forEach(entry => {
                         const note = getNote(weekKey, period, dayIndex, entry.type);
                         if (note) {
-                            dayNotes.push({ period, activity: ACTIVITIES[entry.type], note });
+                            dayNotes.push({ period, type: entry.type, note });
                         }
                     });
                 });
@@ -2792,13 +2953,13 @@
                 dayHeading.textContent = dayName;
                 log.appendChild(dayHeading);
 
-                dayNotes.forEach(({ period, activity, note }) => {
+                dayNotes.forEach(({ period, type, note }) => {
                     const item = document.createElement('div');
                     item.className = 'notes-log-item';
                     const periodLabel = period === 'morning' ? 'Mañana' : 'Tarde';
                     item.innerHTML = `
-                        <span class="stat-emoji">${activity.emoji}</span>
-                        <span class="notes-log-text"><span class="notes-log-activity">${activity.label} · ${periodLabel}:</span> ${note}</span>
+                        ${activityIconHtml(type, 'sm')}
+                        <span class="notes-log-text"><span class="notes-log-activity">${ACTIVITIES[type].label} · ${periodLabel}:</span> ${note}</span>
                     `;
                     log.appendChild(item);
                 });
@@ -2819,14 +2980,7 @@
 
             const row = document.createElement('div');
             row.className = 'activity-item-row';
-
-            const emoji = document.createElement('span');
-            emoji.className = 'activity-emoji';
-            emoji.textContent = activity.emoji;
-
-            const name = document.createElement('span');
-            name.className = 'activity-name';
-            name.textContent = activity.label;
+            row.innerHTML = `${activityIconHtml(entry.type, 'sm')}<span class="activity-name">${activity.label}</span>`;
 
             const btn = document.createElement('button');
             btn.className = 'btn-remove';
@@ -2836,8 +2990,6 @@
                 removeActivityFromDayPeriod(weekKey, dayIndex, period, entry.type);
             };
 
-            row.appendChild(emoji);
-            row.appendChild(name);
             row.appendChild(btn);
 
             item.appendChild(row);
@@ -2958,12 +3110,7 @@
                     if (entries.length === 0) {
                         periodBlock.innerHTML = '<span class="week-overview-empty">–</span>';
                     } else {
-                        entries.forEach(entry => {
-                            const emoji = document.createElement('div');
-                            emoji.className = 'week-overview-emoji';
-                            emoji.textContent = ACTIVITIES[entry.type].emoji;
-                            periodBlock.appendChild(emoji);
-                        });
+                        periodBlock.innerHTML = entries.map(entry => activityIconHtml(entry.type, 'xs')).join('');
                     }
 
                     dayCell.appendChild(periodBlock);
@@ -3117,7 +3264,7 @@
 
                 const row = document.createElement('div');
                 row.className = 'today-activity-row';
-                row.innerHTML = `<span>${activity.emoji}</span><span>${activity.label}</span>`;
+                row.innerHTML = `${activityIconHtml(entry.type)}<span>${activity.label}</span>`;
 
                 item.appendChild(row);
 
@@ -3148,6 +3295,12 @@
                 month: 'long'
             });
 
+            const todaySchedule = peekSchedule(CURRENT_WEEK_KEY);
+            const sessions = [...todaySchedule.morning[dayIndex], ...todaySchedule.afternoon[dayIndex]];
+            document.getElementById('todayHeroMeta').innerHTML = sessions.length
+                ? `${sessions.map(entry => activityIconHtml(entry.type, 'sm')).join('')}<span>${sessions.length} ${sessions.length === 1 ? 'sesión' : 'sesiones'} hoy</span>`
+                : '<span>Día de descanso</span>';
+
             renderTodayPeriod('todayMorning', dayIndex, 'morning');
             renderTodayPeriod('todayAfternoon', dayIndex, 'afternoon');
             renderTodayGarminSummary();
@@ -3158,7 +3311,7 @@
             const last = garminActivities[0]; // ya viene ordenado por start_time desc
             lastEl.innerHTML = last ? `
                 <div class="garmin-activity-card" onclick="openGarminDetail(${last.activity_id})">
-                    <div class="garmin-activity-dot ${last.type}"></div>
+                    ${garminIconHtml(last.type)}
                     <div class="garmin-activity-main">
                         <div class="garmin-activity-name">${last.name || GARMIN_TYPE_LABELS[last.type] || last.type}</div>
                         <div class="garmin-activity-meta">${fmtGarminDist(last.distance_meters)} · ${fmtGarminDur(last.duration_seconds)}${last.calories ? ' · ' + Math.round(last.calories) + ' kcal' : ''}</div>
@@ -3206,6 +3359,8 @@
                     '--red': '#d82530',
                     '--red-dim': '#a41d26',
                     '--red-rgb': '216, 37, 48',
+                    '--grad-a': '#f4513a',
+                    '--grad-b': '#c41a3a',
                     '--text': '#eef2f8',
                     '--text-muted': '#8391ab',
                 },
@@ -3223,6 +3378,8 @@
                     '--red': '#6fae4a',
                     '--red-dim': '#4c7a34',
                     '--red-rgb': '111, 174, 74',
+                    '--grad-a': '#5f9e3c',
+                    '--grad-b': '#2d6e34',
                     '--text': '#eef2ec',
                     '--text-muted': '#889c82',
                 },
@@ -3240,6 +3397,8 @@
                     '--red': '#ed7902',
                     '--red-dim': '#b85e02',
                     '--red-rgb': '237, 121, 2',
+                    '--grad-a': '#e2740a',
+                    '--grad-b': '#b44304',
                     '--text': '#fff6ea',
                     '--text-muted': '#b89a72',
                 },
@@ -3601,6 +3760,7 @@
             document.getElementById('garminPaceLegend').innerHTML = '';
 
             const metric = GARMIN_DIST_METRICS[garminPaceType];
+            const color = `var(--sport-${garminSportKey(garminPaceType)})`;
             const items = garminActivities
                 .filter(a => a.type === garminPaceType)
                 .slice()
@@ -3633,9 +3793,9 @@
                 return { x, y, v, a };
             });
             const line = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-            const dots = pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="var(--red)"><title>${fmtGarminDate(p.a.start_time)} — ${fmt(p.v)}</title></circle>`).join('');
+            const dots = pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${color}"><title>${fmtGarminDate(p.a.start_time)} — ${fmt(p.v)}</title></circle>`).join('');
             el.innerHTML = `<svg viewBox="0 0 ${w} ${h}">
-                <polyline points="${line}" fill="none" stroke="var(--red)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <polyline points="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
                 ${dots}
             </svg>`;
         }
@@ -3667,7 +3827,7 @@
             const avgC = calSeries.reduce((s, v) => s + v, 0) / calSeries.length;
             captionEl.innerHTML = `Gimnasio · horas y calorías por sesión · últimas ${items.length} · media <b>${avgH.toFixed(1)} h</b> · <b>${Math.round(avgC)} kcal</b>`;
             legendEl.innerHTML = `
-                <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background:var(--red)"></span>Horas</div>
+                <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background:var(--sport-strength)"></span>Horas</div>
                 <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background:var(--steel)"></span>Calorías</div>
             `;
 
@@ -3687,7 +3847,7 @@
             };
 
             el.innerHTML = `<svg viewBox="0 0 ${w} ${h}">
-                ${buildLine(hourSeries, 'var(--red)')}
+                ${buildLine(hourSeries, 'var(--sport-strength)')}
                 ${buildLine(calSeries, 'var(--steel)')}
             </svg>`;
         }
@@ -3718,7 +3878,7 @@
 
             el.innerHTML = page.map(a => `
                 <div class="garmin-activity-card" onclick="openGarminDetail(${a.activity_id})">
-                    <div class="garmin-activity-dot ${a.type}"></div>
+                    ${garminIconHtml(a.type)}
                     <div class="garmin-activity-main">
                         <div class="garmin-activity-name">${a.name || GARMIN_TYPE_LABELS[a.type] || a.type}</div>
                         <div class="garmin-activity-meta">${fmtGarminDist(a.distance_meters)} · ${fmtGarminDur(a.duration_seconds)}${a.calories ? ' · ' + Math.round(a.calories) + ' kcal' : ''}</div>
@@ -3757,6 +3917,7 @@
             const a = garminActivities.find(x => x.activity_id === activityId);
             if (!a) return;
 
+            document.getElementById('garminDetailIcon').innerHTML = garminIconHtml(a.type, 'lg');
             document.getElementById('garminDetailTitle').textContent = a.name || GARMIN_TYPE_LABELS[a.type] || a.type;
             document.getElementById('garminDetailDate').textContent = fmtGarminFullDate(a.start_time);
 
@@ -3801,7 +3962,7 @@
             if (!a.polyline || a.polyline.length < 2) return; // sin traza GPS: el div queda vacío y se oculta
 
             const map = L.map(mapEl, { zoomControl: false, attributionControl: true });
-            const track = L.polyline(a.polyline, { color: '#d82530', weight: 3 }).addTo(map);
+            const track = L.polyline(a.polyline, { color: sportColor(garminSportKey(a.type)), weight: 3 }).addTo(map);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 20,
                 subdomains: 'abcd',
@@ -3844,6 +4005,32 @@
         const GARMIN_RUN_TYPES = ['running', 'treadmill_running', 'trail_running'];
         const GARMIN_SWIM_TYPES = ['lap_swimming', 'open_water_swimming'];
         const ZONE_NAMES = ['Calentamiento', 'Suave', 'Aeróbico', 'Umbral', 'Máximo'];
+
+        // Familias de deporte de Garmin (color, icono y series de la carga semanal), en orden de apilado.
+        const SPORT_FAMILIES = [
+            { key: 'run', label: 'Carrera' },
+            { key: 'bike', label: 'Bici' },
+            { key: 'swim', label: 'Natación' },
+            { key: 'strength', label: 'Fuerza' },
+            { key: 'other', label: 'Otros' },
+        ];
+
+        function garminSportKey(type) {
+            if (GARMIN_RUN_TYPES.includes(type)) return 'run';
+            if (GARMIN_BIKE_TYPES.includes(type)) return 'bike';
+            if (GARMIN_SWIM_TYPES.includes(type)) return 'swim';
+            if (GARMIN_GYM_TYPES.includes(type)) return 'strength';
+            return 'other';
+        }
+
+        function garminIconHtml(type, size = '') {
+            const key = garminSportKey(type);
+            return sportIconHtml(key, `bg-${key}`, size);
+        }
+
+        function sportColor(key) {
+            return getComputedStyle(document.documentElement).getPropertyValue(`--sport-${key}`).trim();
+        }
 
         async function loadGarminDailyMetrics() {
             if (!currentUser) return;
@@ -4271,11 +4458,22 @@
                 const x = chartX(s.i, days), yy = y(s.v);
                 const date = fmtShortDate(new Date(startMs + s.i * DAY_MS));
                 return `<g><circle cx="${x.toFixed(1)}" cy="${yy.toFixed(1)}" r="9" fill="transparent"><title>${date} — ${fmt(s.v)}</title></circle>
-                        <circle cx="${x.toFixed(1)}" cy="${yy.toFixed(1)}" r="3" fill="var(--red)" pointer-events="none"/></g>`;
+                        <circle cx="${x.toFixed(1)}" cy="${yy.toFixed(1)}" r="3" fill="var(--grad-a)" stroke="var(--surface)" stroke-width="1.5" pointer-events="none"/></g>`;
             }).join('');
 
+            // Área bajo la línea que se desvanece hacia abajo; userSpaceOnUse para que una línea plana no pierda el trazo.
+            const area = `${path} V${CHART_H - CHART_PAD} H${chartX(series[0].i, days).toFixed(1)} Z`;
             return `<svg viewBox="0 0 ${CHART_W} ${CHART_H}">
-                <path d="${path}" fill="none" stroke="var(--red)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <defs>
+                    <linearGradient id="lineStroke" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${CHART_W}" y2="0">
+                        <stop offset="0" style="stop-color: var(--grad-b)"/><stop offset="1" style="stop-color: var(--grad-a)"/>
+                    </linearGradient>
+                    <linearGradient id="lineArea" gradientUnits="userSpaceOnUse" x1="0" y1="${CHART_PAD}" x2="0" y2="${CHART_H - CHART_PAD}">
+                        <stop offset="0" style="stop-color: var(--grad-a); stop-opacity: 0.32"/><stop offset="1" style="stop-color: var(--grad-a); stop-opacity: 0"/>
+                    </linearGradient>
+                </defs>
+                <path d="${area}" fill="url(#lineArea)" stroke="none"/>
+                <path d="${path}" fill="none" stroke="url(#lineStroke)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
                 ${marks}
             </svg>`;
         }
@@ -4289,7 +4487,10 @@
             const today = startOfDay(Date.now());
             const base = CHART_H - CHART_PAD;
 
-            return `<svg viewBox="0 0 ${CHART_W} ${CHART_H}">${points.map(p => {
+            const defs = `<defs><linearGradient id="barFill" gradientUnits="userSpaceOnUse" x1="0" y1="${CHART_PAD}" x2="0" y2="${base}">
+                <stop offset="0" style="stop-color: var(--grad-a)"/><stop offset="1" style="stop-color: var(--grad-b)"/>
+            </linearGradient></defs>`;
+            return `<svg viewBox="0 0 ${CHART_W} ${CHART_H}">${defs}${points.map(p => {
                 const i = dayIndexOf(p.t, startMs);
                 const x = CHART_PAD + i * slot + (slot - barW) / 2;
                 const low = rangeLow ? (rangeLow(p.row) || 0) : 0;
@@ -4297,7 +4498,7 @@
                 const partial = startOfDay(p.t) === today && !rangeLow;
                 const label = rangeLow ? `${fmt(low)}–${fmt(p.v)}` : fmt(p.v);
                 return `<g><rect x="${(CHART_PAD + i * slot).toFixed(1)}" y="${CHART_PAD}" width="${slot.toFixed(1)}" height="${CHART_H - CHART_PAD * 2}" fill="transparent"><title>${fmtShortDate(new Date(p.t))}${partial ? ' (en curso)' : ''} — ${label}</title></rect>
-                        <rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, bottom - top).toFixed(1)}" rx="${Math.min(2, barW / 2).toFixed(1)}" fill="var(--red)" opacity="${partial ? 0.45 : 0.9}" pointer-events="none"/></g>`;
+                        <rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, bottom - top).toFixed(1)}" rx="${Math.min(2, barW / 2).toFixed(1)}" fill="url(#barFill)" opacity="${partial ? 0.45 : 1}" pointer-events="none"/></g>`;
             }).join('')}</svg>`;
         }
 
@@ -4405,18 +4606,24 @@
 
         function renderGarminLoad() {
             const caption = document.getElementById('loadCaption');
+            const legend = document.getElementById('loadLegend');
             const chart = document.getElementById('loadChart');
             const axis = document.getElementById('loadAxis');
 
             const weeks = [];
             for (let offset = -11; offset <= 0; offset++) {
                 const { monday, sunday } = getGarminWeekBounds(offset);
-                const list = activitiesInRange(monday.getTime(), sunday.getTime());
-                weeks.push({ offset, monday, trimp: list.reduce((s, a) => s + ((a.metrics && a.metrics.trimp) || 0), 0) });
+                const bySport = {};
+                activitiesInRange(monday.getTime(), sunday.getTime()).forEach(a => {
+                    const key = garminSportKey(a.type);
+                    bySport[key] = (bySport[key] || 0) + ((a.metrics && a.metrics.trimp) || 0);
+                });
+                weeks.push({ offset, monday, bySport, trimp: Object.values(bySport).reduce((s, v) => s + v, 0) });
             }
 
             if (!weeks.some(w => w.trimp > 0)) {
                 caption.innerHTML = '';
+                legend.innerHTML = '';
                 chart.innerHTML = '<div class="stats-empty">La carga se calcula con tus zonas de FC; aparecerá en cuanto el sync guarde las primeras.</div>';
                 axis.innerHTML = '';
             } else {
@@ -4424,17 +4631,30 @@
                 const maxTrimp = Math.max(...weeks.map(w => w.trimp));
                 caption.innerHTML = `Carga semanal (TRIMP: minutos en cada zona × nº de zona) · media <b>${Math.round(avg)}</b>/semana`;
 
+                const families = SPORT_FAMILIES.filter(f => weeks.some(w => w.bySport[f.key] > 0));
+                legend.innerHTML = families.map(f => `
+                    <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background: var(--sport-${f.key})"></span>${f.label}</div>
+                `).join('');
+
                 const slot = (CHART_W - CHART_PAD * 2) / weeks.length;
                 const barW = slot * 0.62;
                 const top = 18, base = CHART_H - 2;
                 chart.innerHTML = `<svg viewBox="0 0 ${CHART_W} ${CHART_H}">${weeks.map((w, i) => {
-                    const h = (w.trimp / maxTrimp) * (base - top);
                     const x = CHART_PAD + i * slot + (slot - barW) / 2;
-                    const isCurrent = w.offset === 0;
-                    const showLabel = w.trimp > 0 && (isCurrent || w.trimp === maxTrimp);
-                    return `<g><rect x="${(CHART_PAD + i * slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${CHART_H}" fill="transparent"><title>Semana del ${fmtShortDate(w.monday)} — ${Math.round(w.trimp)} TRIMP</title></rect>
-                            <rect x="${x.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(w.trimp > 0 ? 2 : 0, h).toFixed(1)}" rx="3" fill="${isCurrent ? 'var(--red)' : 'var(--steel)'}" pointer-events="none"/>
-                            ${showLabel ? `<text x="${(x + barW / 2).toFixed(1)}" y="${(base - h - 5).toFixed(1)}" text-anchor="middle" font-size="9" font-family="JetBrains Mono, monospace" fill="var(--text-muted)">${Math.round(w.trimp)}</text>` : ''}</g>`;
+                    const showLabel = w.trimp > 0 && (w.offset === 0 || w.trimp === maxTrimp);
+                    // Tramos apilados de abajo arriba, con 2 px de separación entre deportes.
+                    let cursor = base;
+                    const segments = families.map(f => {
+                        const value = w.bySport[f.key] || 0;
+                        if (!value) return '';
+                        const h = (value / maxTrimp) * (base - top);
+                        cursor -= h;
+                        return `<rect x="${x.toFixed(1)}" y="${cursor.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, h - 2).toFixed(1)}" rx="2" fill="var(--sport-${f.key})"/>`;
+                    }).join('');
+                    const detail = families.filter(f => w.bySport[f.key]).map(f => `${f.label} ${Math.round(w.bySport[f.key])}`).join(' · ');
+                    return `<g><rect x="${(CHART_PAD + i * slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${CHART_H}" fill="transparent"><title>Semana del ${fmtShortDate(w.monday)} — ${Math.round(w.trimp)} TRIMP${detail ? ` (${detail})` : ''}</title></rect>
+                            <g pointer-events="none">${segments}</g>
+                            ${showLabel ? `<text x="${(x + barW / 2).toFixed(1)}" y="${(cursor - 5).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" font-family="Barlow Condensed, Inter, sans-serif" fill="var(--text-muted)">${Math.round(w.trimp)}</text>` : ''}</g>`;
                 }).join('')}</svg>`;
                 axis.innerHTML = `<span>${fmtShortDate(weeks[0].monday)}</span><span>esta semana</span>`;
             }
@@ -4532,7 +4752,7 @@
         async function ensureStoryFonts() {
             if (storyFontsReady || !document.fonts) return;
             try {
-                await Promise.all(['700 92px Rajdhani', '500 36px Inter', '600 30px Inter'].map(f => document.fonts.load(f)));
+                await Promise.all(['800 92px "Barlow Condensed"', '700 46px "Barlow Condensed"', '500 36px Inter', '600 30px Inter'].map(f => document.fonts.load(f)));
             } catch (e) { /* si no cargan, el canvas usa la fuente del sistema */ }
             storyFontsReady = true;
         }
@@ -4723,7 +4943,8 @@
             return new Date(a.start_time.replace(' ', 'T')).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
-        function drawStoryRoute(ctx, points, box, theme) {
+        function drawStoryRoute(ctx, points, box, color) {
+            const colorRgb = hexToRgb(color);
             const lats = points.map(p => p[0]);
             const midLat = (Math.min(...lats) + Math.max(...lats)) / 2;
             const k = Math.cos(midLat * Math.PI / 180);
@@ -4746,9 +4967,9 @@
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
             trace();
-            ctx.strokeStyle = `rgba(${theme.accentRgb}, 0.9)`;
+            ctx.strokeStyle = `rgba(${colorRgb}, 0.9)`;
             ctx.lineWidth = 16;
-            ctx.shadowColor = `rgba(${theme.accentRgb}, 0.7)`;
+            ctx.shadowColor = `rgba(${colorRgb}, 0.7)`;
             ctx.shadowBlur = 30;
             ctx.stroke();
             ctx.shadowBlur = 0;
@@ -4762,7 +4983,7 @@
             const [ex, ey] = projected[projected.length - 1];
             ctx.fillStyle = '#ffffff';
             ctx.beginPath(); ctx.arc(sx, sy, 14, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = theme.accent;
+            ctx.fillStyle = color;
             ctx.beginPath(); ctx.arc(sx, sy, 8, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(ex, ey, 14, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#ffffff';
@@ -4772,7 +4993,7 @@
         }
 
         function drawStoryValue(ctx, num, unit, size, x, baseline, center) {
-            const numFont = `700 ${size}px Rajdhani`;
+            const numFont = `800 ${size}px "Barlow Condensed"`;
             const unitFont = `600 ${Math.round(size * 0.4)}px Inter`;
             const gap = unit ? Math.round(size * 0.12) : 0;
             const parts = [{ text: num, font: numFont, color: '#ffffff' }];
@@ -4836,32 +5057,33 @@
             const stats = keys.map(k => byKey[k]);
             const hasRoute = el.route && a.polyline && a.polyline.length > 1;
             const zones = el.zones && a.metrics && a.metrics.hr_zones;
+            const sportHex = sportColor(garminSportKey(a.type)) || theme.accent;
             const blocks = [];
             const GAP = 40;
 
             const header = [];
-            if (el.sport) header.push({ text: storySportLabel(a).toUpperCase(), font: '700 46px Rajdhani', color: theme.accent, spacing: 6 });
+            if (el.sport) header.push({ text: storySportLabel(a).toUpperCase(), font: '800 48px "Barlow Condensed"', color: sportHex, spacing: 5 });
             if (el.date) header.push({ text: `${header.length ? '   ' : ''}${storyDateLabel(a)}`, font: '500 36px Inter', color: 'rgba(255, 255, 255, 0.82)' });
             if (header.length) blocks.push({ h: 52, draw: y => drawStoryRun(ctx, header, anchorX, y + 44, center) });
 
             if (el.title) {
-                const font = '700 92px Rajdhani';
-                const lines = wrapStoryText(ctx, (a.name || storySportLabel(a)).toUpperCase(), font, width, 2, 2);
+                const font = '800 104px "Barlow Condensed"';
+                const lines = wrapStoryText(ctx, (a.name || storySportLabel(a)).toUpperCase(), font, width, 2, 1);
                 blocks.push({
-                    h: lines.length * 96,
-                    draw: y => lines.forEach((line, i) => drawStoryRun(ctx, [{ text: line, font, color: '#ffffff', spacing: 2 }], anchorX, y + 80 + i * 96, center)),
+                    h: lines.length * 100,
+                    draw: y => lines.forEach((line, i) => drawStoryRun(ctx, [{ text: line, font, color: '#ffffff', spacing: 1 }], anchorX, y + 86 + i * 100, center)),
                 });
             }
 
             if (hasRoute) {
                 const h = stats.length > 6 ? 420 : 560;
-                blocks.push({ h, draw: y => drawStoryRoute(ctx, a.polyline, { x: left, y, w: width, h }, theme) });
+                blocks.push({ h, draw: y => drawStoryRoute(ctx, a.polyline, { x: left, y, w: width, h }, sportHex) });
             }
 
             if (stats.length) {
                 const cols = stats.length === 1 ? 1 : 2;
                 const rows = Math.ceil(stats.length / cols);
-                const valueSize = stats.length <= 2 ? 132 : stats.length <= 4 ? 110 : stats.length <= 6 ? 92 : 76;
+                const valueSize = stats.length <= 2 ? 144 : stats.length <= 4 ? 120 : stats.length <= 6 ? 100 : 82;
                 const labelSize = Math.round(valueSize * 0.28);
                 const rowH = labelSize + valueSize + 44;
                 const colW = width / cols;
@@ -4891,7 +5113,7 @@
                 draw: () => {
                     const brandY = Math.min(190, top - 70);
                     if (el.brand && brandY >= 90) {
-                        drawStoryRun(ctx, [{ text: 'PLAN TRIATLÓN · 2027', font: '700 34px Rajdhani', color: 'rgba(255, 255, 255, 0.9)', spacing: 8 }], anchorX, brandY, center);
+                        drawStoryRun(ctx, [{ text: 'PLAN TRIATLÓN · 2027', font: '800 38px "Barlow Condensed"', color: 'rgba(255, 255, 255, 0.9)', spacing: 6 }], anchorX, brandY, center);
                     }
                     let cursor = top;
                     blocks.forEach(b => {
