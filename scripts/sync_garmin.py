@@ -9,7 +9,7 @@ Tablas que rellena:
                             potencia, natación, carga TRIMP...)
     garmin_daily_metrics    una fila por día: FC reposo, estrés, body battery, pasos,
                             minutos de intensidad, respiración, sueño, HRV y VO2max (este último
-                            con historial de 180 días, para medir la progresión)
+                            con historial de 200 días, para medir la progresión)
 
 El sync es incremental para no saturar la API de Garmin:
     - solo pide el detalle (traza GPS, zonas de FC) de actividades nuevas o que aún no
@@ -310,7 +310,7 @@ def daily_metrics_row(client, user_id, date_str):
     }
 
 
-VO2MAX_HISTORY_DAYS = 180
+VO2MAX_HISTORY_DAYS = 200  # cubre la comparación de 6 meses con margen
 VO2MAX_CHUNK_DAYS = 90  # Garmin no garantiza rangos más largos en una sola petición
 
 
