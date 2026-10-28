@@ -26,6 +26,7 @@
             --text-muted: #8391ab;
             --grad-a: #f4513a;
             --grad-b: #c41a3a;
+            --on-accent: #fff; /* texto e iconos sobre el degradado */
             --gradient: linear-gradient(135deg, var(--grad-a), var(--grad-b));
             /* Color por disciplina (las de fuerza y recuperación comparten color; el icono las distingue).
                Carrera, bici, natación y fuerza son las series de los gráficos: validadas en luminosidad,
@@ -52,7 +53,7 @@
 
         body {
             background-color: var(--ink);
-            background-image: radial-gradient(ellipse 1000px 600px at 50% -10%, rgba(96, 121, 168, 0.22), transparent);
+            background-image: radial-gradient(ellipse 1000px 600px at 50% -10%, color-mix(in srgb, var(--steel) 22%, transparent), transparent);
             color: var(--text);
             font-family: var(--font-body);
             padding: 8px;
@@ -306,7 +307,7 @@
             border-radius: 50%;
             border: none;
             background: var(--gradient);
-            color: #fff;
+            color: var(--on-accent);
             font-size: 18px;
             font-weight: bold;
             line-height: 1;
@@ -752,7 +753,7 @@
         .garmin-tab.active {
             border-color: transparent;
             background: var(--gradient);
-            color: #fff;
+            color: var(--on-accent);
             box-shadow: 0 4px 14px rgba(var(--red-rgb, 216, 37, 48), 0.35);
         }
 
@@ -1095,7 +1096,7 @@
             gap: 8px;
             background: var(--gradient);
             border: none;
-            color: #fff;
+            color: var(--on-accent);
             font-family: var(--font-display);
             font-size: 18px;
             font-weight: 800;
@@ -1225,7 +1226,7 @@
             height: 16px;
             border-radius: 8px;
             background: var(--gradient);
-            color: #fff;
+            color: var(--on-accent);
             font-family: var(--font-display);
             font-size: 12px;
             font-weight: 800;
@@ -1255,7 +1256,7 @@
         .story-btn-primary {
             background: var(--gradient);
             border: none;
-            color: #fff;
+            color: var(--on-accent);
         }
 
         .story-btn-secondary {
@@ -1394,7 +1395,7 @@
         .confirm-ok {
             background: var(--gradient);
             border: none;
-            color: #fff;
+            color: var(--on-accent);
         }
 
         .notes-log {
@@ -1503,7 +1504,7 @@
 
         .nav-btn.active {
             background: var(--gradient);
-            color: #fff;
+            color: var(--on-accent);
             box-shadow: 0 4px 14px rgba(var(--red-rgb, 216, 37, 48), 0.35);
         }
 
@@ -1517,13 +1518,13 @@
         }
 
         .progress-hero .garmin-tab {
-            background-color: rgba(255, 255, 255, 0.16);
+            background-color: color-mix(in srgb, var(--on-accent) 16%, transparent);
             border-color: transparent;
-            color: #fff;
+            color: inherit;
         }
 
         .progress-hero .garmin-tab.active {
-            background: #fff;
+            background: var(--on-accent);
             color: var(--grad-b);
             box-shadow: none;
         }
@@ -1557,7 +1558,7 @@
             gap: 8px;
             margin-top: 16px;
             padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            border-top: 1px solid color-mix(in srgb, var(--on-accent) 25%, transparent);
         }
 
         .hero-stat-value {
@@ -1690,7 +1691,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             background-color: var(--ink);
-            background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(96, 121, 168, 0.22), transparent);
+            background-image: radial-gradient(ellipse 900px 500px at 50% -10%, color-mix(in srgb, var(--steel) 22%, transparent), transparent);
             padding: max(14px, env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
         }
 
@@ -1770,7 +1771,7 @@
             border-radius: 24px;
             padding: 18px 18px 16px;
             margin-bottom: 14px;
-            color: #fff;
+            color: var(--on-accent);
             box-shadow: 0 12px 30px rgba(var(--red-rgb, 216, 37, 48), 0.32);
         }
 
@@ -1802,7 +1803,8 @@
             font-family: var(--font-display);
             font-size: 17px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.85);
+            color: inherit;
+            opacity: 0.85;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
@@ -1827,7 +1829,7 @@
         }
 
         .today-hero-meta .sport-icon {
-            background-color: #fff;
+            background-color: var(--on-accent);
             color: var(--accent);
             box-shadow: none;
         }
@@ -2074,7 +2076,7 @@
             justify-content: center;
             padding: 20px;
             background-color: var(--ink);
-            background-image: radial-gradient(ellipse 1000px 600px at 50% -10%, rgba(96, 121, 168, 0.22), transparent);
+            background-image: radial-gradient(ellipse 1000px 600px at 50% -10%, color-mix(in srgb, var(--steel) 22%, transparent), transparent);
             z-index: 300;
         }
 
@@ -2151,7 +2153,7 @@
             width: 100%;
             background: var(--gradient);
             border: none;
-            color: #fff;
+            color: var(--on-accent);
             font-family: var(--font-display);
             font-size: 19px;
             font-weight: 800;
@@ -2848,6 +2850,14 @@
         }
 
         const CHANGELOG = [
+            {
+                date: '28 oct 2026',
+                items: [
+                    'Cinco temas nuevos en Mi cuenta: Volt, Océano, Atardecer, Ultravioleta y Grafito.',
+                    'Barra inferior rediseñada: flotante, con los 5 botones iguales y la pantalla activa marcada con el degradado del tema.',
+                    'Progreso estilo Nike Run Club: tarjeta resumen con el total del periodo y bloques grandes que abren cada sección a pantalla completa.',
+                ],
+            },
             {
                 date: '27 oct 2026',
                 items: [
@@ -3557,6 +3567,7 @@
                     '--red-rgb': '216, 37, 48',
                     '--grad-a': '#f4513a',
                     '--grad-b': '#c41a3a',
+                    '--on-accent': '#fff',
                     '--text': '#eef2f8',
                     '--text-muted': '#8391ab',
                 },
@@ -3576,6 +3587,7 @@
                     '--red-rgb': '111, 174, 74',
                     '--grad-a': '#5f9e3c',
                     '--grad-b': '#2d6e34',
+                    '--on-accent': '#fff',
                     '--text': '#eef2ec',
                     '--text-muted': '#889c82',
                 },
@@ -3595,8 +3607,109 @@
                     '--red-rgb': '237, 121, 2',
                     '--grad-a': '#e2740a',
                     '--grad-b': '#b44304',
+                    '--on-accent': '#fff',
                     '--text': '#fff6ea',
                     '--text-muted': '#b89a72',
+                },
+            },
+            volt: {
+                name: 'Volt',
+                desc: 'Negro y amarillo neón',
+                logo: 'assets/ironman-logo.png',
+                vars: {
+                    '--ink': '#070807',
+                    '--surface': '#0f110e',
+                    '--surface-raised': '#171a15',
+                    '--line': '#2a2f26',
+                    '--steel': '#8a9a6c',
+                    '--red': '#c6f135',
+                    '--red-dim': '#9bc21f',
+                    '--red-rgb': '198, 241, 53',
+                    '--grad-a': '#d4f53c',
+                    '--grad-b': '#9ccc1a',
+                    '--on-accent': '#0b0d08',
+                    '--text': '#f3f6ee',
+                    '--text-muted': '#8f9886',
+                },
+            },
+            oceano: {
+                name: 'Océano',
+                desc: 'Azul profundo y turquesa',
+                logo: 'assets/ironman-logo.png',
+                vars: {
+                    '--ink': '#04121a',
+                    '--surface': '#0a1c27',
+                    '--surface-raised': '#102634',
+                    '--line': '#1d3a4c',
+                    '--steel': '#5f9fb8',
+                    '--red': '#1fb5e0',
+                    '--red-dim': '#1478b8',
+                    '--red-rgb': '31, 181, 224',
+                    '--grad-a': '#1497c7',
+                    '--grad-b': '#1d4fc4',
+                    '--on-accent': '#fff',
+                    '--text': '#eaf6fb',
+                    '--text-muted': '#7fa3b5',
+                },
+            },
+            atardecer: {
+                name: 'Atardecer',
+                desc: 'Morado noche con rosa y naranja',
+                logo: 'assets/ironman-logo.png',
+                vars: {
+                    '--ink': '#120a1a',
+                    '--surface': '#1b1126',
+                    '--surface-raised': '#251833',
+                    '--line': '#3a2950',
+                    '--steel': '#a07cc0',
+                    '--red': '#ff5c7a',
+                    '--red-dim': '#d63d6b',
+                    '--red-rgb': '255, 92, 122',
+                    '--grad-a': '#ef5f2c',
+                    '--grad-b': '#d6306a',
+                    '--on-accent': '#fff',
+                    '--text': '#f8eefa',
+                    '--text-muted': '#a893b8',
+                },
+            },
+            ultravioleta: {
+                name: 'Ultravioleta',
+                desc: 'Violeta eléctrico',
+                logo: 'assets/ironman-logo.png',
+                vars: {
+                    '--ink': '#0c0a1a',
+                    '--surface': '#141128',
+                    '--surface-raised': '#1c1836',
+                    '--line': '#2f2a52',
+                    '--steel': '#8a84c8',
+                    '--red': '#8b5cf6',
+                    '--red-dim': '#6d3fe0',
+                    '--red-rgb': '139, 92, 246',
+                    '--grad-a': '#9a6bff',
+                    '--grad-b': '#5b2fd6',
+                    '--on-accent': '#fff',
+                    '--text': '#f0eefc',
+                    '--text-muted': '#9590bf',
+                },
+            },
+            grafito: {
+                name: 'Grafito',
+                desc: 'Negro y plata, minimalista',
+                logo: 'assets/ironman-logo.png',
+                vars: {
+                    '--ink': '#0a0a0b',
+                    '--surface': '#131315',
+                    '--surface-raised': '#1b1b1e',
+                    '--line': '#2c2c31',
+                    '--steel': '#8b8f98',
+                    '--red': '#e8eaee',
+                    '--red-dim': '#b9bdc6',
+                    '--red-rgb': '232, 234, 238',
+                    '--grad-a': '#f4f5f7',
+                    '--grad-b': '#b4b9c2',
+                    '--on-accent': '#0b0c0e',
+                    '--text': '#f4f4f5',
+                    '--text-muted': '#8e9099',
                 },
             },
         };
