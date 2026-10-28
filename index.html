@@ -758,7 +758,7 @@
 
         .garmin-pace-chart svg {
             width: 100%;
-            height: 90px;
+            height: 150px;
             display: block;
         }
 
@@ -985,7 +985,7 @@
 
         .v2-chart svg {
             width: 100%;
-            height: 120px;
+            height: 180px;
             display: block;
         }
 
@@ -1565,6 +1565,257 @@
             letter-spacing: 0.02em;
         }
 
+        /* PANTALLA PROGRESO: tarjeta resumen y bloques grandes (estilo Nike Run Club) */
+        .progress-hero > * {
+            position: relative;
+        }
+
+        .progress-hero .garmin-tabs {
+            margin: 12px 0 14px;
+        }
+
+        .progress-hero .garmin-tab {
+            background-color: rgba(255, 255, 255, 0.16);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .progress-hero .garmin-tab.active {
+            background: #fff;
+            color: var(--grad-b);
+            box-shadow: none;
+        }
+
+        .hero-number {
+            font-family: var(--font-display);
+            font-size: 84px;
+            font-weight: 800;
+            line-height: 0.88;
+        }
+
+        .hero-number small,
+        .hub-value small,
+        .detail-view .garmin-summary-value small {
+            font-size: 0.34em;
+            font-weight: 700;
+            margin-left: 6px;
+            opacity: 0.8;
+        }
+
+        .hero-caption {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .hero-stat-value {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .hero-stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 30px;
+            font-weight: 800;
+            text-transform: uppercase;
+            line-height: 1;
+            margin: 24px 2px 12px;
+        }
+
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .hub-tile {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 156px;
+            padding: 16px;
+            text-align: left;
+            background-color: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            color: var(--text);
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .hub-tile:active {
+            transform: scale(0.97);
+        }
+
+        .hub-tile.wide {
+            grid-column: 1 / -1;
+        }
+
+        .hub-tile.highlight {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--grad-a) 32%, var(--surface)), var(--surface) 70%);
+            border-color: color-mix(in srgb, var(--grad-a) 40%, var(--line));
+        }
+
+        .hub-label {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            padding-right: 24px;
+        }
+
+        .hub-arrow {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+
+        .hub-value {
+            font-family: var(--font-display);
+            font-size: 50px;
+            font-weight: 800;
+            line-height: 0.95;
+            margin-top: auto;
+            padding-top: 14px;
+            white-space: nowrap;
+        }
+
+        .hub-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            line-height: 1.35;
+        }
+
+        .hub-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .hub-chip {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--good);
+            background-color: rgba(63, 191, 127, 0.15);
+            padding: 3px 9px;
+            border-radius: 999px;
+        }
+
+        .hub-mini {
+            margin-top: 12px;
+        }
+
+        .hub-mini svg {
+            width: 100%;
+            height: 44px;
+            display: block;
+        }
+
+        .detail-view {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            display: none;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background-color: var(--ink);
+            background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(96, 121, 168, 0.22), transparent);
+            padding: max(14px, env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+        }
+
+        .detail-view.active {
+            display: block;
+        }
+
+        .detail-view-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .detail-back {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background-color: var(--surface-raised);
+            color: var(--text);
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .detail-view-title {
+            font-family: var(--font-display);
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 0.95;
+            text-transform: uppercase;
+        }
+
+        .detail-panel {
+            display: none;
+        }
+
+        .detail-panel.active {
+            display: block;
+        }
+
+        .detail-view .garmin-summary-value {
+            font-size: 42px;
+        }
+
+        .detail-view .progress-value {
+            font-size: 36px;
+        }
+
+        .detail-view .v2-caption,
+        .detail-view .garmin-chart-caption {
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .garmin-summary-item.selectable {
+            cursor: pointer;
+            border-width: 1.5px;
+        }
+
+        .garmin-summary-item.selectable.active {
+            border-color: transparent;
+            background: linear-gradient(var(--surface-raised), var(--surface-raised)) padding-box, var(--gradient) border-box;
+        }
+
         /* PANTALLA HOY */
         #screen-today {
             padding: 0 6px;
@@ -2077,56 +2328,14 @@
 
         <!-- PANTALLA PROGRESO -->
         <div class="screen" id="screen-progress">
-            <div class="stats-container">
-                <div class="stats-label">Actividad Garmin</div>
+            <div class="today-hero progress-hero">
+                <div class="today-daylabel">Actividad</div>
                 <div class="garmin-tabs" id="garminPeriodTabs"></div>
-                <div class="garmin-summary" id="garminSummary"></div>
+                <div id="garminSummary"></div>
             </div>
 
-            <div class="stats-container">
-                <div class="stats-label">Progresión</div>
-                <div class="garmin-tabs" id="progressWindowTabs"></div>
-                <div class="v2-caption" id="progressCaption"></div>
-                <div class="progress-grid" id="progressGrid"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Forma y bienestar</div>
-                <div class="garmin-summary" id="wellnessSummary"></div>
-                <div class="garmin-tabs" id="wellnessTabs" style="margin-top: 14px;"></div>
-                <div class="v2-caption" id="wellnessCaption"></div>
-                <div class="garmin-chart-legend" id="wellnessLegend"></div>
-                <div class="v2-chart" id="wellnessChart"></div>
-                <div class="v2-chart-axis" id="wellnessAxis"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Carga y zonas de FC</div>
-                <div class="v2-caption" id="loadCaption"></div>
-                <div class="v2-legend" id="loadLegend"></div>
-                <div class="v2-chart" id="loadChart"></div>
-                <div class="v2-chart-axis" id="loadAxis"></div>
-                <div class="v2-subtitle">Tiempo por zonas · últimos 28 días</div>
-                <div id="zonesSummary"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Semana a semana</div>
-                <div class="day-nav">
-                    <button class="day-nav-btn" id="garminWeekPrevBtn" onclick="setGarminWeekOffset(garminWeekOffset - 1)">‹</button>
-                    <div class="day-nav-current" id="garminWeekLabel"></div>
-                    <button class="day-nav-btn" id="garminWeekNextBtn" onclick="setGarminWeekOffset(garminWeekOffset + 1)">›</button>
-                </div>
-                <div class="garmin-summary" id="garminWeekSummary"></div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-label">Evolución por sesión</div>
-                <div class="garmin-tabs" id="garminPaceTabs"></div>
-                <div class="garmin-chart-caption" id="garminPaceCaption"></div>
-                <div class="garmin-chart-legend" id="garminPaceLegend"></div>
-                <div class="garmin-pace-chart" id="garminPaceChart"></div>
-            </div>
+            <div class="section-heading">Tu progreso</div>
+            <div class="hub-grid" id="progressHub"></div>
 
             <div class="stats-container">
                 <div class="stats-label">Actividades</div>
@@ -2174,6 +2383,57 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- DETALLE DE CADA BLOQUE DE PROGRESO -->
+    <div class="detail-view" id="progressDetail">
+        <div class="detail-view-header">
+            <button class="detail-back" onclick="closeProgressDetail()" aria-label="Volver">‹</button>
+            <div class="detail-view-title" id="progressDetailTitle"></div>
+        </div>
+
+        <div class="detail-panel" data-panel="progress">
+            <div class="garmin-tabs" id="progressWindowTabs"></div>
+            <div class="v2-caption" id="progressCaption"></div>
+            <div class="progress-grid" id="progressGrid"></div>
+        </div>
+
+        <div class="detail-panel" data-panel="wellness">
+            <div class="v2-caption" id="wellnessCaption"></div>
+            <div class="garmin-chart-legend" id="wellnessLegend"></div>
+            <div class="v2-chart" id="wellnessChart"></div>
+            <div class="v2-chart-axis" id="wellnessAxis"></div>
+            <div class="v2-subtitle">Toca una métrica para ver su gráfico</div>
+            <div class="garmin-summary" id="wellnessSummary"></div>
+        </div>
+
+        <div class="detail-panel" data-panel="load">
+            <div class="v2-caption" id="loadCaption"></div>
+            <div class="v2-legend" id="loadLegend"></div>
+            <div class="v2-chart" id="loadChart"></div>
+            <div class="v2-chart-axis" id="loadAxis"></div>
+        </div>
+
+        <div class="detail-panel" data-panel="zones">
+            <div class="v2-caption">Tiempo en cada zona de FC · últimos 28 días</div>
+            <div id="zonesSummary"></div>
+        </div>
+
+        <div class="detail-panel" data-panel="week">
+            <div class="day-nav">
+                <button class="day-nav-btn" id="garminWeekPrevBtn" onclick="setGarminWeekOffset(garminWeekOffset - 1)">‹</button>
+                <div class="day-nav-current" id="garminWeekLabel"></div>
+                <button class="day-nav-btn" id="garminWeekNextBtn" onclick="setGarminWeekOffset(garminWeekOffset + 1)">›</button>
+            </div>
+            <div class="garmin-summary" id="garminWeekSummary"></div>
+        </div>
+
+        <div class="detail-panel" data-panel="sessions">
+            <div class="garmin-tabs" id="garminPaceTabs"></div>
+            <div class="garmin-chart-caption" id="garminPaceCaption"></div>
+            <div class="garmin-chart-legend" id="garminPaceLegend"></div>
+            <div class="garmin-pace-chart" id="garminPaceChart"></div>
+        </div>
     </div>
 
     <!-- HOJA PARA AÑADIR ACTIVIDAD -->
@@ -3695,12 +3955,21 @@
             const days = GARMIN_PERIODS.find(p => p.key === garminPeriod).days;
             const since = Date.now() - days * 24 * 3600 * 1000;
             const recent = garminActivities.filter(a => new Date(a.start_time.replace(' ', 'T')).getTime() >= since);
-            document.getElementById('garminSummary').innerHTML = summarizeGarmin(recent).map(i => `
-                <div class="garmin-summary-item">
-                    <div class="garmin-summary-value">${i.value}</div>
-                    <div class="garmin-summary-label">${i.label}</div>
-                </div>
-            `).join('');
+            const km = recent.reduce((s, a) => s + (a.distance_meters || 0), 0) / 1000;
+            const secs = recent.reduce((s, a) => s + (a.duration_seconds || 0), 0);
+            const cal = recent.reduce((s, a) => s + (a.calories || 0), 0);
+            const stats = [
+                [recent.length, 'Actividades'],
+                [fmtGarminDur(secs), 'Tiempo'],
+                [Math.round(cal).toLocaleString('es-ES'), 'Calorías'],
+            ];
+            document.getElementById('garminSummary').innerHTML = `
+                <div class="hero-number">${km.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}<small>km</small></div>
+                <div class="hero-caption">Distancia · últimos ${days} días</div>
+                <div class="hero-stats">${stats.map(([value, label]) => `
+                    <div><div class="hero-stat-value">${value}</div><div class="hero-stat-label">${label}</div></div>
+                `).join('')}</div>
+            `;
         }
 
         function getGarminWeekBounds(offsetWeeks) {
@@ -3783,7 +4052,7 @@
             captionEl.innerHTML = `${metric.label} · ${metric.unit === 'km' ? 'km' : 'metros'} por sesión · últimas ${items.length} · mín <b>${fmt(min)}</b> · media <b>${fmt(avg)}</b> · máx <b>${fmt(max)}</b>`;
 
             const range = max - min || 1;
-            const w = 320, h = 90, pad = 10;
+            const w = 320, h = 150, pad = 10;
             const n = items.length;
             const pts = items.map((a, i) => {
                 const v = garminDistanceValue(a, metric);
@@ -3831,7 +4100,7 @@
                 <div class="garmin-chart-legend-item"><span class="garmin-chart-legend-dot" style="background:var(--steel)"></span>Calorías</div>
             `;
 
-            const w = 320, h = 90, pad = 10;
+            const w = 320, h = 150, pad = 10;
             const n = items.length;
             const buildLine = (series, color) => {
                 const min = Math.min(...series), max = Math.max(...series);
@@ -3985,6 +4254,7 @@
         }
 
         function renderGarminSection() {
+            renderProgressHub();
             renderGarminPeriodTabs();
             renderGarminSummary();
             renderGarminProgress();
@@ -4406,7 +4676,7 @@
             };
         }
 
-        const CHART_W = 320, CHART_H = 120, CHART_PAD = 10;
+        const CHART_W = 320, CHART_H = 180, CHART_PAD = 10;
 
         function chartX(dayIndex, days) {
             return CHART_PAD + (days > 1 ? dayIndex / (days - 1) : 0.5) * (CHART_W - CHART_PAD * 2);
@@ -4534,7 +4804,6 @@
 
         function renderGarminWellness() {
             const summary = document.getElementById('wellnessSummary');
-            const tabs = document.getElementById('wellnessTabs');
             const caption = document.getElementById('wellnessCaption');
             const legend = document.getElementById('wellnessLegend');
             const chart = document.getElementById('wellnessChart');
@@ -4543,7 +4812,7 @@
             const available = WELLNESS_METRICS.filter(m => garminDailyMetrics.some(r => m.get(r) !== null));
             if (!available.length) {
                 summary.innerHTML = '<div class="stats-empty" style="grid-column: 1 / -1;">Aún no hay datos de bienestar. Se sincronizan solos desde Garmin cada 6 h.</div>';
-                [tabs, caption, legend, chart, axis].forEach(el => { el.innerHTML = ''; });
+                [caption, legend, chart, axis].forEach(el => { el.innerHTML = ''; });
                 return;
             }
             if (!available.some(m => m.key === wellnessMetric)) wellnessMetric = available[0].key;
@@ -4551,17 +4820,13 @@
             summary.innerHTML = available.map(m => {
                 const tile = wellnessTile(m);
                 return `
-                    <div class="garmin-summary-item">
-                        <div class="garmin-summary-value">${tile.value}</div>
+                    <div class="garmin-summary-item selectable ${m.key === wellnessMetric ? 'active' : ''}" onclick="setWellnessMetric('${m.key}')">
+                        <div class="garmin-summary-value">${hubValueHtml(tile.value)}</div>
                         <div class="garmin-summary-label">${m.label}</div>
                         <div class="garmin-summary-sub">${tile.sub}</div>
                     </div>
                 `;
             }).join('');
-
-            tabs.innerHTML = available.map(m => `
-                <button class="garmin-tab ${m.key === wellnessMetric ? 'active' : ''}" onclick="setWellnessMetric('${m.key}')">${m.label}</button>
-            `).join('');
 
             const metric = available.find(m => m.key === wellnessMetric);
             const startMs = startOfDay(Date.now() - (metric.days - 1) * DAY_MS);
@@ -4604,12 +4869,8 @@
 
         // --- Carga semanal y zonas ---
 
-        function renderGarminLoad() {
-            const caption = document.getElementById('loadCaption');
-            const legend = document.getElementById('loadLegend');
-            const chart = document.getElementById('loadChart');
-            const axis = document.getElementById('loadAxis');
-
+        // Carga (TRIMP) de las últimas 12 semanas, desglosada por deporte.
+        function computeWeeklyLoad() {
             const weeks = [];
             for (let offset = -11; offset <= 0; offset++) {
                 const { monday, sunday } = getGarminWeekBounds(offset);
@@ -4620,6 +4881,25 @@
                 });
                 weeks.push({ offset, monday, bySport, trimp: Object.values(bySport).reduce((s, v) => s + v, 0) });
             }
+            return weeks;
+        }
+
+        function zoneTotals(days) {
+            const totals = [0, 0, 0, 0, 0];
+            activitiesInRange(Date.now() - days * DAY_MS, Date.now()).forEach(a => {
+                const zones = a.metrics && a.metrics.hr_zones;
+                if (zones) zones.forEach((secs, i) => { totals[i] += secs || 0; });
+            });
+            return totals;
+        }
+
+        function renderGarminLoad() {
+            const caption = document.getElementById('loadCaption');
+            const legend = document.getElementById('loadLegend');
+            const chart = document.getElementById('loadChart');
+            const axis = document.getElementById('loadAxis');
+
+            const weeks = computeWeeklyLoad();
 
             if (!weeks.some(w => w.trimp > 0)) {
                 caption.innerHTML = '';
@@ -4659,14 +4939,127 @@
                 axis.innerHTML = `<span>${fmtShortDate(weeks[0].monday)}</span><span>esta semana</span>`;
             }
 
-            const totals = [0, 0, 0, 0, 0];
-            activitiesInRange(Date.now() - 28 * DAY_MS, Date.now()).forEach(a => {
-                const zones = a.metrics && a.metrics.hr_zones;
-                if (zones) zones.forEach((secs, i) => { totals[i] += secs || 0; });
-            });
+            const totals = zoneTotals(28);
             document.getElementById('zonesSummary').innerHTML = totals.some(Boolean)
                 ? buildZonesHtml(totals)
                 : '<div class="stats-empty">Sin zonas de FC en los últimos 28 días todavía.</div>';
+        }
+
+        // --- Bloques de Progreso (cada uno abre su vista de detalle) ---
+
+        const PROGRESS_PANELS = {
+            progress: 'Progresión',
+            wellness: 'Forma y bienestar',
+            load: 'Carga semanal',
+            zones: 'Zonas de FC',
+            week: 'Semana a semana',
+            sessions: 'Evolución por sesión',
+        };
+
+        function openProgressDetail(key) {
+            document.getElementById('progressDetailTitle').textContent = PROGRESS_PANELS[key];
+            document.querySelectorAll('#progressDetail .detail-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.dataset.panel === key);
+            });
+            const view = document.getElementById('progressDetail');
+            view.classList.add('active');
+            view.scrollTop = 0;
+        }
+
+        function closeProgressDetail() {
+            document.getElementById('progressDetail').classList.remove('active');
+            renderProgressHub(); // por si se cambió de periodo o de métrica dentro del detalle
+        }
+
+        // "50 bpm" -> número grande + unidad pequeña
+        function hubValueHtml(text) {
+            const [num, ...unit] = String(text).split(' ');
+            return `${num}${unit.length ? `<small>${unit.join(' ')}</small>` : ''}`;
+        }
+
+        function hubLoadSparkline(weeks) {
+            const max = Math.max(...weeks.map(w => w.trimp)) || 1;
+            const slot = 320 / weeks.length, barW = slot * 0.6;
+            return `<svg viewBox="0 0 320 44" preserveAspectRatio="none">${weeks.map((w, i) => {
+                const h = Math.max(w.trimp ? 3 : 0, (w.trimp / max) * 44);
+                return `<rect x="${(i * slot + (slot - barW) / 2).toFixed(1)}" y="${(44 - h).toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${w.offset === 0 ? 'var(--grad-a)' : 'var(--line)'}"/>`;
+            }).join('')}</svg>`;
+        }
+
+        function buildProgressTiles() {
+            const tiles = [];
+
+            const items = computeProgressItems(28);
+            const deltas = items.map(item => ({ item, delta: progressDelta(item) })).filter(d => d.delta);
+            const improved = deltas.filter(d => d.delta.cls === 'good');
+            tiles.push({
+                key: 'progress', wide: true, highlight: true,
+                value: deltas.length ? `${improved.length}/${deltas.length}` : '–',
+                sub: deltas.length ? 'métricas mejoran respecto a las 4 semanas anteriores' : 'Todavía no hay datos suficientes para comparar',
+                extra: improved.length ? `<div class="hub-chips">${improved.slice(0, 3).map(d => `<span class="hub-chip">${d.item.label} ${d.delta.text}</span>`).join('')}</div>` : '',
+            });
+
+            const available = WELLNESS_METRICS.filter(m => garminDailyMetrics.some(r => m.get(r) !== null));
+            const wellness = available.find(m => m.key === 'resting_hr') || available[0];
+            const wellnessInfo = wellness && wellnessTile(wellness);
+            tiles.push({
+                key: 'wellness',
+                value: wellnessInfo ? hubValueHtml(wellnessInfo.value) : '–',
+                sub: wellness ? wellness.label : 'Sin datos todavía',
+            });
+
+            const totals = zoneTotals(28);
+            const zoneSum = totals.reduce((s, v) => s + v, 0);
+            const top = totals.indexOf(Math.max(...totals));
+            tiles.push({
+                key: 'zones',
+                value: zoneSum ? `Z${top + 1}<small>${Math.round(totals[top] / zoneSum * 100)}%</small>` : '–',
+                sub: zoneSum ? `${ZONE_NAMES[top]} · zona principal en 28 días` : 'Sin zonas todavía',
+                extra: zoneSum ? `<div class="hub-mini"><div class="zone-bar">${totals.map((secs, i) => secs / zoneSum >= 0.01 ? `<span style="width:${(secs / zoneSum * 100).toFixed(2)}%; background-color: var(--zone-${i + 1});"></span>` : '').join('')}</div></div>` : '',
+            });
+
+            const weeks = computeWeeklyLoad();
+            const current = weeks[weeks.length - 1].trimp;
+            const hasLoad = weeks.some(w => w.trimp > 0);
+            tiles.push({
+                key: 'load', wide: true,
+                value: hasLoad ? `${Math.round(current).toLocaleString('es-ES')}<small>TRIMP</small>` : '–',
+                sub: hasLoad ? `esta semana · media ${Math.round(averageOf(weeks.map(w => w.trimp)))} en 12 semanas` : 'Aparecerá en cuanto haya zonas de FC',
+                extra: hasLoad ? `<div class="hub-mini">${hubLoadSparkline(weeks)}</div>` : '',
+            });
+
+            const { monday, sunday } = getGarminWeekBounds(0);
+            const thisWeek = activitiesInRange(monday.getTime(), sunday.getTime());
+            const weekKm = thisWeek.reduce((s, a) => s + (a.distance_meters || 0), 0) / 1000;
+            tiles.push({
+                key: 'week',
+                value: String(thisWeek.length),
+                sub: `actividades esta semana · ${weekKm.toFixed(1)} km`,
+            });
+
+            const lastSession = garminActivities.find(a => GARMIN_DIST_METRICS[a.type] && a.distance_meters);
+            const lastMetric = lastSession && GARMIN_DIST_METRICS[lastSession.type];
+            tiles.push({
+                key: 'sessions',
+                value: lastSession
+                    ? `${(lastSession.distance_meters / lastMetric.divisor).toFixed(lastMetric.decimals === 0 ? 0 : 1)}<small>${lastMetric.unit}</small>`
+                    : '–',
+                sub: lastSession ? `última sesión · ${lastMetric.label}` : 'Sin sesiones todavía',
+            });
+
+            return tiles;
+        }
+
+        function renderProgressHub() {
+            document.getElementById('progressHub').innerHTML = buildProgressTiles().map(t => `
+                <button class="hub-tile ${t.wide ? 'wide' : ''} ${t.highlight ? 'highlight' : ''}" onclick="openProgressDetail('${t.key}')">
+                    <span class="hub-label">${PROGRESS_PANELS[t.key]}</span>
+                    <span class="hub-arrow">›</span>
+                    <span class="hub-value">${t.value}</span>
+                    <span class="hub-sub">${t.sub}</span>
+                    ${t.extra || ''}
+                </button>
+            `).join('');
         }
 
         // --- Editor de historias ---
